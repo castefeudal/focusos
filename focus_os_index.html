@@ -1,0 +1,2247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#090A0D" />
+  <title>FOCUS OS / Markov Focus Lab</title>
+  <style>
+    :root {
+      --bg-0: #090A0D;
+      --bg-1: #111318;
+      --bg-2: #171A21;
+      --card: rgba(255,255,255,0.06);
+      --card-strong: rgba(255,255,255,0.09);
+      --border: rgba(255,255,255,0.10);
+      --border-strong: rgba(214,179,106,0.38);
+      --text: #F4F1EA;
+      --muted: #A9A9A9;
+      --muted-2: #74777F;
+      --accent: #D6B36A;
+      --accent-2: #C9A24D;
+      --calm: #7EA6A1;
+      --danger: #D98282;
+      --ok: #9ACB95;
+      --shadow: 0 24px 90px rgba(0,0,0,0.45);
+      --radius-xl: 34px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+      --focus-glow: 0 0 0 1px rgba(214,179,106,0.18), 0 20px 70px rgba(214,179,106,0.12);
+      --font: Inter, Manrope, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "SF Mono", "Roboto Mono", "Cascadia Mono", ui-monospace, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(214,179,106,0.14), transparent 34%),
+        radial-gradient(circle at 85% 10%, rgba(126,166,161,0.13), transparent 32%),
+        radial-gradient(circle at 50% 95%, rgba(201,162,77,0.10), transparent 38%),
+        linear-gradient(135deg, var(--bg-0), var(--bg-1) 52%, #08090C);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 46px 46px;
+      mask-image: radial-gradient(circle at center, black, transparent 78%);
+      opacity: .32;
+      z-index: -2;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), transparent 18%, rgba(0,0,0,0.22));
+      z-index: -1;
+    }
+
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+
+    .app-shell {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 28px 0 52px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(9,10,13,0.58);
+      backdrop-filter: blur(20px);
+      position: sticky;
+      top: 14px;
+      z-index: 30;
+      box-shadow: 0 14px 50px rgba(0,0,0,0.24);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 30%, rgba(255,255,255,0.38), transparent 22%),
+        linear-gradient(135deg, rgba(214,179,106,0.92), rgba(126,166,161,0.62));
+      box-shadow: 0 0 34px rgba(214,179,106,0.20);
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      inset: 9px;
+      border: 1px solid rgba(9,10,13,0.78);
+      border-radius: 50%;
+    }
+
+    .brand-title {
+      font-weight: 780;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-subtitle {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav-btn, .icon-btn {
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: rgba(255,255,255,0.055);
+      border-radius: 999px;
+      padding: 10px 14px;
+      transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+
+    .nav-btn:hover, .icon-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(214,179,106,0.42);
+      background: rgba(255,255,255,0.085);
+      box-shadow: var(--focus-glow);
+    }
+
+    .icon-btn { width: 42px; height: 42px; padding: 0; display: grid; place-items: center; }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.04fr) minmax(340px, .76fr);
+      gap: 28px;
+      align-items: stretch;
+      padding: 66px 0 28px;
+    }
+
+    .hero-card, .panel, .glass-card, .screen-card {
+      border: 1px solid var(--border);
+      background: linear-gradient(145deg, rgba(255,255,255,0.075), rgba(255,255,255,0.035));
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(24px);
+    }
+
+    .hero-card {
+      padding: clamp(28px, 5vw, 56px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      right: -130px;
+      top: -140px;
+      background: radial-gradient(circle, rgba(214,179,106,0.20), transparent 68%);
+      filter: blur(4px);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      margin-bottom: 20px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 18px rgba(214,179,106,0.8);
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      font-size: clamp(44px, 7vw, 86px);
+      line-height: .92;
+      letter-spacing: -0.08em;
+      margin-bottom: 22px;
+      max-width: 840px;
+    }
+
+    .lead {
+      color: rgba(244,241,234,0.74);
+      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.5;
+      max-width: 710px;
+      margin-bottom: 30px;
+    }
+
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 26px; }
+
+    .btn {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 14px 18px;
+      min-height: 52px;
+      background: rgba(255,255,255,0.065);
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      font-weight: 750;
+      letter-spacing: -0.02em;
+      transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease, opacity .2s ease;
+      user-select: none;
+    }
+
+    .btn:hover { transform: translateY(-1px); border-color: rgba(214,179,106,0.42); background: rgba(255,255,255,0.095); }
+    .btn:disabled { cursor: not-allowed; opacity: .48; transform: none; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #16120A;
+      border-color: rgba(255,255,255,0.16);
+      box-shadow: 0 18px 44px rgba(214,179,106,0.22);
+    }
+
+    .btn-primary:hover { background: linear-gradient(135deg, #E7C87E, #C9A24D); box-shadow: 0 20px 55px rgba(214,179,106,0.30); }
+    .btn-calm { background: rgba(126,166,161,0.14); border-color: rgba(126,166,161,0.28); }
+    .btn-danger { background: rgba(217,130,130,0.12); border-color: rgba(217,130,130,0.30); color: #FFD9D9; }
+    .btn-ghost { background: transparent; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+    .chip {
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: rgba(244,241,234,0.78);
+      font-size: 13px;
+    }
+
+    .status-panel {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 420px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .status-panel::before {
+      content: "";
+      position: absolute;
+      inset: 24px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(126,166,161,0.12), transparent 62%);
+      filter: blur(20px);
+      opacity: .9;
+    }
+
+    .lab-orb {
+      width: min(280px, 72vw);
+      aspect-ratio: 1;
+      margin: 16px auto 22px;
+      border-radius: 50%;
+      position: relative;
+      background:
+        radial-gradient(circle at 38% 32%, rgba(255,255,255,0.28), transparent 17%),
+        radial-gradient(circle, rgba(214,179,106,0.12), transparent 55%),
+        linear-gradient(145deg, rgba(214,179,106,0.18), rgba(126,166,161,0.10));
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: inset 0 0 48px rgba(255,255,255,0.06), 0 0 80px rgba(214,179,106,0.12);
+      animation: floatOrb 7s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    .lab-orb::before, .lab-orb::after {
+      content: "";
+      position: absolute;
+      border: 1px solid rgba(244,241,234,0.10);
+      border-radius: 50%;
+      inset: 18px;
+    }
+
+    .lab-orb::after {
+      inset: 44px;
+      border-color: rgba(214,179,106,0.18);
+      box-shadow: 0 0 44px rgba(214,179,106,0.08);
+    }
+
+    @keyframes floatOrb { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.025); } }
+
+    .daily-line {
+      position: relative;
+      z-index: 2;
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.20);
+    }
+
+    .daily-line h3 { margin-bottom: 10px; font-size: 19px; letter-spacing: -0.03em; }
+    .daily-line p { margin: 0; color: var(--muted); line-height: 1.45; }
+
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 16px 0 36px;
+    }
+
+    .mini-stat {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.045);
+      min-height: 96px;
+    }
+
+    .mini-stat strong {
+      display: block;
+      font-size: 26px;
+      letter-spacing: -0.04em;
+      margin-bottom: 4px;
+      font-family: var(--mono);
+    }
+
+    .mini-stat span { color: var(--muted); font-size: 13px; line-height: 1.35; }
+
+    .section-title {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin: 38px 0 16px;
+    }
+
+    .section-title h2 {
+      font-size: clamp(26px, 4vw, 44px);
+      letter-spacing: -0.06em;
+      margin: 0;
+    }
+
+    .section-title p { margin: 0; color: var(--muted); max-width: 440px; line-height: 1.45; }
+
+    .screen-card {
+      padding: clamp(18px, 3vw, 28px);
+      margin-bottom: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen-card.hidden, .hidden { display: none !important; }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .step-kicker {
+      color: var(--accent);
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .step-header h2 { margin: 4px 0 0; font-size: clamp(24px, 4vw, 38px); letter-spacing: -0.05em; }
+    .soft-note { color: var(--muted); line-height: 1.45; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    label {
+      color: rgba(244,241,234,0.82);
+      font-weight: 750;
+      font-size: 13px;
+      letter-spacing: -0.01em;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      color: var(--text);
+      background: rgba(0,0,0,0.22);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px 14px;
+      outline: none;
+      transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+    textarea { resize: vertical; min-height: 98px; line-height: 1.45; }
+    input:focus, textarea:focus, select:focus { border-color: rgba(214,179,106,0.46); box-shadow: var(--focus-glow); background: rgba(0,0,0,0.30); }
+    select option { background: #111318; color: var(--text); }
+
+    .preset-grid, .mode-grid, .breath-grid, .pause-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .select-card {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.045);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      text-align: left;
+      color: var(--text);
+      min-height: 150px;
+      transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .select-card::after {
+      content: "";
+      position: absolute;
+      width: 130px;
+      height: 130px;
+      right: -70px;
+      top: -70px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(214,179,106,0.16), transparent 68%);
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+
+    .select-card:hover { transform: translateY(-2px); border-color: rgba(214,179,106,0.32); background: rgba(255,255,255,0.065); }
+    .select-card:hover::after, .select-card.active::after { opacity: 1; }
+    .select-card.active { border-color: var(--border-strong); box-shadow: var(--focus-glow); background: rgba(214,179,106,0.085); }
+
+    .select-card h3 { margin: 0 0 8px; letter-spacing: -0.035em; font-size: 19px; }
+    .select-card p { color: var(--muted); line-height: 1.42; margin: 0 0 12px; font-size: 14px; }
+    .select-meta { display: flex; flex-wrap: wrap; gap: 7px; }
+    .select-meta span { font-size: 12px; color: rgba(244,241,234,0.76); background: rgba(0,0,0,0.18); border: 1px solid var(--border); border-radius: 999px; padding: 6px 8px; }
+
+    .setup-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .range-field { display: grid; gap: 10px; }
+    input[type="range"] { padding: 0; accent-color: var(--accent); }
+
+    .custom-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .session-layout {
+      min-height: calc(100vh - 110px);
+      display: grid;
+      place-items: center;
+      padding: 28px 0;
+    }
+
+    .session-card {
+      width: min(920px, 100%);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 42px;
+      background: linear-gradient(145deg, rgba(9,10,13,0.92), rgba(17,19,24,0.82));
+      box-shadow: 0 34px 130px rgba(0,0,0,0.60);
+      padding: clamp(18px, 4vw, 36px);
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .session-card::before {
+      content: "";
+      position: absolute;
+      inset: -20%;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(214,179,106,0.12), transparent 24%),
+        radial-gradient(circle at 70% 65%, rgba(126,166,161,0.10), transparent 28%);
+      z-index: -1;
+      filter: blur(10px);
+    }
+
+    .session-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+
+    .phase-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      border: 1px solid rgba(214,179,106,0.30);
+      background: rgba(214,179,106,0.08);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    .phase-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 16px currentColor;
+    }
+
+    .session-task { color: var(--muted); margin: 8px 0 0; line-height: 1.45; max-width: 720px; }
+    .session-task strong { color: var(--text); }
+
+    .timer-stage {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 26px;
+      margin: 24px 0;
+    }
+
+    .breath-stage { display: grid; place-items: center; min-height: 384px; }
+
+    .breath-visual {
+      width: min(360px, 72vw);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      position: relative;
+      transform: scale(var(--breath-scale, 1));
+      transition: transform var(--phase-duration, 4s) cubic-bezier(.2,.0,.2,1), border-radius .55s ease;
+      background:
+        radial-gradient(circle at 38% 32%, rgba(255,255,255,0.30), transparent 13%),
+        radial-gradient(circle, rgba(214,179,106,0.22), rgba(126,166,161,0.10) 45%, transparent 69%);
+      border: 1px solid rgba(244,241,234,0.14);
+      box-shadow: inset 0 0 60px rgba(255,255,255,0.06), 0 0 85px rgba(214,179,106,0.14);
+      overflow: hidden;
+    }
+
+    .breath-visual.box-mode { border-radius: 30px; }
+
+    .breath-visual::before, .breath-visual::after {
+      content: "";
+      position: absolute;
+      inset: 22px;
+      border-radius: inherit;
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .breath-visual::after {
+      inset: 54px;
+      border-color: rgba(214,179,106,0.19);
+      animation: innerPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes innerPulse { 0%,100% { opacity: .42; transform: scale(.98); } 50% { opacity: .9; transform: scale(1.02); } }
+
+    .breath-text {
+      text-align: center;
+      z-index: 2;
+      padding: 20px;
+    }
+
+    .breath-text .label {
+      font-size: clamp(32px, 5vw, 54px);
+      letter-spacing: -0.07em;
+      font-weight: 850;
+      margin-bottom: 8px;
+    }
+
+    .breath-text .seconds {
+      font-family: var(--mono);
+      color: var(--accent);
+      font-size: 36px;
+      letter-spacing: -0.05em;
+    }
+
+    .timer-ring {
+      width: min(365px, 78vw);
+      aspect-ratio: 1;
+      position: relative;
+      display: grid;
+      place-items: center;
+      margin: 0 auto;
+    }
+
+    .timer-ring svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+      filter: drop-shadow(0 0 30px rgba(214,179,106,0.10));
+    }
+
+    .timer-ring .track { stroke: rgba(255,255,255,0.08); }
+    .timer-ring .progress {
+      stroke: var(--accent);
+      stroke-dasharray: 1000;
+      stroke-dashoffset: var(--dash, 1000);
+      transition: stroke-dashoffset .7s linear;
+      stroke-linecap: round;
+    }
+
+    .timer-content {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .main-time {
+      font-family: var(--mono);
+      font-size: clamp(50px, 8vw, 82px);
+      letter-spacing: -0.08em;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .timer-caption { color: var(--muted); line-height: 1.42; }
+
+    .session-side {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      background: rgba(255,255,255,0.045);
+      padding: 20px;
+    }
+
+    .session-side h3 { margin: 0 0 10px; letter-spacing: -0.035em; }
+    .session-side p { color: var(--muted); line-height: 1.45; margin: 0 0 14px; }
+    .small-list { display: grid; gap: 10px; margin: 14px 0; }
+    .small-list div { padding: 12px; border-radius: 16px; background: rgba(0,0,0,0.18); border: 1px solid var(--border); color: rgba(244,241,234,0.84); }
+
+    .session-controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    .focus-dim .topbar, .focus-dim .hero, .focus-dim .stats-strip, .focus-dim .section-title:not(.session-title) { opacity: .22; filter: saturate(.55); }
+    .night-mode { background: linear-gradient(145deg, #050609, #0B0E13 58%, #090A0D); }
+    .night-mode .session-card { background: linear-gradient(145deg, rgba(4,5,8,0.98), rgba(12,14,18,0.92)); }
+    .night-mode .breath-visual { box-shadow: inset 0 0 50px rgba(255,255,255,0.04), 0 0 50px rgba(126,166,161,0.08); }
+
+    .completion-grid {
+      display: grid;
+      grid-template-columns: 1fr .8fr;
+      gap: 16px;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .result-card {
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.18);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+    }
+
+    .result-card strong { display: block; font-family: var(--mono); font-size: 25px; letter-spacing: -0.04em; margin-bottom: 5px; }
+    .result-card span { color: var(--muted); font-size: 13px; }
+
+    .quote-card {
+      border: 1px solid rgba(214,179,106,0.22);
+      background: linear-gradient(145deg, rgba(214,179,106,0.09), rgba(255,255,255,0.035));
+      border-radius: var(--radius-xl);
+      padding: 22px;
+    }
+
+    .quote-card p { font-size: 22px; line-height: 1.25; letter-spacing: -0.04em; margin-bottom: 10px; }
+    .quote-card span { color: var(--muted); }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .stat-card {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.045);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      min-height: 116px;
+    }
+
+    .stat-card strong { display: block; font-family: var(--mono); font-size: 30px; letter-spacing: -0.06em; margin-bottom: 8px; }
+    .stat-card span { color: var(--muted); line-height: 1.35; font-size: 13px; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.66);
+      backdrop-filter: blur(16px);
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      z-index: 60;
+    }
+
+    .modal {
+      width: min(560px, 100%);
+      border: 1px solid var(--border);
+      background: linear-gradient(145deg, rgba(17,19,24,0.98), rgba(9,10,13,0.98));
+      border-radius: var(--radius-xl);
+      box-shadow: 0 34px 140px rgba(0,0,0,0.70);
+      padding: 24px;
+    }
+
+    .modal h2 { margin-bottom: 10px; letter-spacing: -0.05em; }
+    .modal p, .modal li { color: var(--muted); line-height: 1.45; }
+    .modal ol { padding-left: 20px; margin: 14px 0; }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      background: rgba(17,19,24,0.94);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 12px 16px;
+      box-shadow: 0 16px 55px rgba(0,0,0,0.42);
+      transition: transform .25s ease, opacity .25s ease;
+      z-index: 90;
+    }
+
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .safety {
+      margin-top: 28px;
+      border: 1px solid rgba(217,130,130,0.22);
+      background: rgba(217,130,130,0.075);
+      border-radius: var(--radius-xl);
+      padding: 18px;
+      color: rgba(244,241,234,0.82);
+      line-height: 1.52;
+    }
+
+    .safety strong { color: #FFD9D9; }
+
+    .footer {
+      margin-top: 36px;
+      color: var(--muted-2);
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      font-size: 13px;
+    }
+
+    .kbd {
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 3px 7px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+    }
+
+    @media (max-width: 980px) {
+      .hero, .timer-stage, .completion-grid { grid-template-columns: 1fr; }
+      .stats-strip, .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .form-grid, .preset-grid, .mode-grid, .breath-grid, .pause-grid { grid-template-columns: repeat(2, 1fr); }
+      .timer-stage { gap: 18px; }
+    }
+
+    @media (max-width: 680px) {
+      .app-shell { width: min(100% - 24px, 1180px); padding-top: 12px; }
+      .topbar { border-radius: 22px; align-items: flex-start; top: 8px; }
+      .brand-subtitle { display: none; }
+      .top-actions .nav-btn { display: none; }
+      .hero { padding-top: 34px; }
+      .hero-card, .status-panel, .screen-card, .session-card { border-radius: 26px; }
+      .hero-actions .btn, .setup-actions .btn, .session-controls .btn { width: 100%; }
+      .stats-strip, .stats-grid, .form-grid, .preset-grid, .mode-grid, .breath-grid, .pause-grid, .settings-grid, .custom-grid, .result-grid { grid-template-columns: 1fr; }
+      .section-title { display: block; }
+      .section-title p { margin-top: 8px; }
+      .session-top { display: block; }
+      .phase-pill { margin-bottom: 12px; }
+      .breath-stage { min-height: 315px; }
+      .session-side { padding: 16px; }
+      .main-time { font-size: 58px; }
+      .timer-ring { width: min(320px, 90vw); }
+      .topbar { padding: 12px; }
+      .brand-title { max-width: 190px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell" id="appShell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <div>
+          <div class="brand-title">FOCUS OS</div>
+          <div class="brand-subtitle">Markov Focus Lab</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="nav-btn" data-scroll="#setupScreen">Сессия</button>
+        <button class="nav-btn" data-scroll="#statsScreen">Статистика</button>
+        <button class="nav-btn" data-scroll="#safetyBlock">Безопасность</button>
+        <button class="icon-btn" id="nightToggle" title="Ночной режим" aria-label="Ночной режим">◐</button>
+      </div>
+    </header>
+
+    <main id="homeView">
+      <section class="hero">
+        <div class="hero-card">
+          <div class="eyebrow">Markov Focus Lab</div>
+          <h1>Войди в фокус за 3 минуты</h1>
+          <p class="lead">Дыхание, таймер, звук и микропаузы — одна система для глубокой работы.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" id="heroStartBtn">Начать фокус-сессию</button>
+            <button class="btn btn-ghost" id="heroSettingsBtn">Настроить режим</button>
+          </div>
+          <div class="chips">
+            <span class="chip">3 мин подготовки</span>
+            <span class="chip">25–90 мин работы</span>
+            <span class="chip">дыхание + звук</span>
+            <span class="chip">без лишнего шума</span>
+          </div>
+        </div>
+
+        <aside class="status-panel panel">
+          <div class="lab-orb" aria-hidden="true"></div>
+          <div class="daily-line">
+            <h3>Личная лаборатория концентрации</h3>
+            <p>Сначала цель. Потом дыхание. Потом работа. Минимум засчитывается.</p>
+          </div>
+        </aside>
+      </section>
+
+      <section class="stats-strip" id="quickStats">
+        <div class="mini-stat"><strong id="quickToday">0м</strong><span>фокус сегодня</span></div>
+        <div class="mini-stat"><strong id="quickSessions">0</strong><span>сессий всего</span></div>
+        <div class="mini-stat"><strong id="quickStreak">0</strong><span>дней streak</span></div>
+        <div class="mini-stat"><strong id="quickAvg">—</strong><span>средний фокус</span></div>
+      </section>
+
+      <section class="section-title">
+        <div>
+          <div class="step-kicker">Session Builder</div>
+          <h2>Собери рабочее состояние</h2>
+        </div>
+        <p>Один экран — одно решение. Интерфейс ведёт от ясной цели к рабочему состоянию.</p>
+      </section>
+
+      <section class="screen-card" id="setupScreen">
+        <div class="step-header">
+          <div>
+            <div class="step-kicker">Шаг 1</div>
+            <h2>Задача</h2>
+          </div>
+          <span class="chip">Фокус начинается не с таймера, а с ясной цели.</span>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="taskInput">Что я сейчас делаю?</label>
+            <input id="taskInput" type="text" placeholder="Например: учить Project Management" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="resultInput">Какой результат должен быть в конце?</label>
+            <input id="resultInput" type="text" placeholder="Разобрать тему Stakeholders" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="minimumInput">Минимальный успешный результат</label>
+            <input id="minimumInput" type="text" placeholder="10 минут без отвлечений" autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="form-grid" style="margin-top:14px;">
+          <div class="field">
+            <label for="nextActionInput">Следующее физическое действие</label>
+            <input id="nextActionInput" type="text" placeholder="Открыть документ и написать первый абзац" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="minimumSelect">Минимальный вход</label>
+            <select id="minimumSelect">
+              <option value="5">5 минут</option>
+              <option value="10" selected>10 минут</option>
+              <option value="15">15 минут</option>
+              <option value="25">25 минут</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="intentionCheck">Implementation Intention</label>
+            <button class="btn btn-calm" id="intentionCheck" type="button">Если отвлекусь — длинный выдох и назад</button>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:14px;">
+          <label for="dumpInput">Distraction Dump — выгрузи всё, что мешает</label>
+          <textarea id="dumpInput" placeholder="Мысли, дела, тревоги. Запиши сюда, чтобы не держать в голове."></textarea>
+        </div>
+
+        <div class="section-title" style="margin-top:26px;">
+          <div>
+            <div class="step-kicker">Шаг 2</div>
+            <h2>Пресет</h2>
+          </div>
+          <p>Выбери готовый сценарий или настрой вручную ниже.</p>
+        </div>
+        <div class="preset-grid" id="presetGrid"></div>
+
+        <div class="section-title" style="margin-top:26px;">
+          <div>
+            <div class="step-kicker">Шаг 3</div>
+            <h2>Режим работы</h2>
+          </div>
+        </div>
+        <div class="mode-grid" id="modeGrid"></div>
+
+        <div class="section-title" style="margin-top:26px;">
+          <div>
+            <div class="step-kicker">Шаг 4</div>
+            <h2>Дыхание</h2>
+          </div>
+          <p>Подготовка снижает внутренний шум и помогает мягко войти в работу.</p>
+        </div>
+        <div class="breath-grid" id="breathGrid"></div>
+
+        <details class="glass-card" style="margin-top:14px; padding:16px; border-radius:24px;">
+          <summary style="cursor:pointer; font-weight:800; color:var(--accent);">Настроить «Мой режим»</summary>
+          <div class="custom-grid">
+            <div class="field"><label for="customName">Название</label><input id="customName" value="Мой режим" /></div>
+            <div class="field"><label for="customInhale">Вдох, сек</label><input id="customInhale" type="number" min="0" max="20" value="4" /></div>
+            <div class="field"><label for="customHoldIn">Задержка, сек</label><input id="customHoldIn" type="number" min="0" max="20" value="0" /></div>
+            <div class="field"><label for="customExhale">Выдох, сек</label><input id="customExhale" type="number" min="1" max="30" value="6" /></div>
+            <div class="field"><label for="customHoldOut">Пауза, сек</label><input id="customHoldOut" type="number" min="0" max="20" value="0" /></div>
+            <div class="field"><label for="customCycles">Циклов</label><input id="customCycles" type="number" min="1" max="99" value="18" /></div>
+            <div class="field"><label for="customColor">Цвет</label><input id="customColor" type="color" value="#D6B36A" /></div>
+            <div class="field"><label>&nbsp;</label><button class="btn" id="saveCustomBreath" type="button">Сохранить</button></div>
+          </div>
+        </details>
+
+        <div class="section-title" style="margin-top:26px;">
+          <div>
+            <div class="step-kicker">Шаг 5</div>
+            <h2>Звук</h2>
+          </div>
+          <p>Звук — мягкая поддержка. Бинауральные ритмы опциональны и требуют наушников.</p>
+        </div>
+
+        <div class="settings-grid">
+          <div class="field">
+            <label for="soundSelect">Звуковой режим</label>
+            <select id="soundSelect"></select>
+          </div>
+          <div class="field">
+            <label for="binauralSelect">Бинауральный слой</label>
+            <select id="binauralSelect"></select>
+          </div>
+          <div class="range-field">
+            <label for="volumeRange">Громкость фона: <span id="volumeLabel">20%</span></label>
+            <input id="volumeRange" type="range" min="0" max="100" value="20" />
+          </div>
+          <div class="range-field">
+            <label for="metronomeRange">Метроном дыхания: <span id="metronomeLabel">25%</span></label>
+            <input id="metronomeRange" type="range" min="0" max="100" value="25" />
+          </div>
+        </div>
+
+        <div class="setup-actions">
+          <p class="soft-note" style="margin:0;">Твоя задача — не победить день. Твоя задача — войти в процесс.</p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn" id="testSoundBtn" type="button">Проверить звук</button>
+            <button class="btn btn-primary" id="startSessionBtn" type="button">Начать</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen-card" id="statsScreen">
+        <div class="step-header">
+          <div>
+            <div class="step-kicker">Progress</div>
+            <h2>Статистика</h2>
+          </div>
+          <button class="btn btn-danger" id="resetStatsBtn" type="button">Сбросить статистику</button>
+        </div>
+        <div class="stats-grid" id="statsGrid"></div>
+      </section>
+
+      <section class="safety" id="safetyBlock">
+        <strong>Важно.</strong> Дыхательные практики и звуковые режимы не являются медицинским лечением. Если появляется головокружение, тревога, боль, дискомфорт или ухудшение состояния — остановись и вернись к обычному дыханию. Бинауральные ритмы используй только в безопасной обстановке и не используй во время вождения или опасной деятельности. Для бинауральных ритмов нужны наушники.
+      </section>
+    </main>
+
+    <section class="session-layout hidden" id="sessionView" aria-live="polite">
+      <div class="session-card">
+        <div class="session-top">
+          <div>
+            <div class="phase-pill" id="phasePill">Подготовка</div>
+            <p class="session-task" id="sessionTaskLine"><strong>Задача:</strong> —</p>
+          </div>
+          <button class="btn btn-ghost" id="backHomeBtn" type="button">Выйти</button>
+        </div>
+
+        <div class="timer-stage" id="activeStage">
+          <div class="breath-stage" id="breathStage">
+            <div class="breath-visual" id="breathVisual">
+              <div class="breath-text">
+                <div class="label" id="breathLabel">Вдох</div>
+                <div class="seconds" id="breathPhaseSeconds">5</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="timer-ring" id="timerRing">
+            <svg viewBox="0 0 220 220" aria-hidden="true">
+              <circle class="track" cx="110" cy="110" r="96" fill="none" stroke-width="10"></circle>
+              <circle class="progress" id="progressCircle" cx="110" cy="110" r="96" fill="none" stroke-width="10"></circle>
+            </svg>
+            <div class="timer-content">
+              <div>
+                <div class="main-time" id="mainTime">03:00</div>
+                <div class="timer-caption" id="timerCaption">Сначала дыхание. Потом работа.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="session-side" id="sessionSide">
+          <h3 id="sideTitle">Подготовка</h3>
+          <p id="sideText">Дыши ровно. Не форсируй. Фокус возвращается через выдох.</p>
+          <div class="small-list" id="sideList"></div>
+        </aside>
+
+        <div class="session-controls" id="sessionControls">
+          <button class="btn" id="pauseBtn" type="button">Пауза</button>
+          <button class="btn btn-calm" id="skipBreathBtn" type="button">Пропустить дыхание</button>
+          <button class="btn" id="distractedBtn" type="button">Я отвлёкся</button>
+          <button class="btn btn-primary" id="returnFocusBtn" type="button">Вернуть фокус</button>
+          <button class="btn btn-danger" id="finishBtn" type="button">Завершить</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen-card hidden" id="completionView">
+      <div class="step-header">
+        <div>
+          <div class="step-kicker">Done</div>
+          <h2>Сессия завершена.</h2>
+        </div>
+        <span class="chip" id="completionStreak">Streak: 0</span>
+      </div>
+
+      <div class="completion-grid">
+        <div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="doneInput">Что сделал?</label>
+              <textarea id="doneInput" placeholder="Кратко: что реально продвинулось?"></textarea>
+            </div>
+            <div class="field">
+              <label for="focusScoreInput">Фокус от 1 до 10</label>
+              <input id="focusScoreInput" type="number" min="1" max="10" value="8" />
+            </div>
+            <div class="field">
+              <label for="improveInput">Что улучшить в следующей сессии?</label>
+              <textarea id="improveInput" placeholder="Например: заранее убрать телефон."></textarea>
+            </div>
+          </div>
+
+          <div class="result-grid" id="resultGrid"></div>
+          <div class="setup-actions">
+            <button class="btn btn-primary" id="saveResultBtn" type="button">Сохранить результат</button>
+            <button class="btn" id="copyReportBtn" type="button">Скопировать отчёт</button>
+            <button class="btn btn-calm" id="newSessionBtn" type="button">Начать ещё одну сессию</button>
+          </div>
+        </div>
+
+        <div class="quote-card">
+          <p id="finishQuote">Тишина — это инструмент.</p>
+          <span>Минимум засчитывается. Сделай следующий шаг.</span>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>FOCUS OS / Markov Focus Lab</span>
+      <span><span class="kbd">Space</span> пауза · <span class="kbd">F</span> вернуть фокус · <span class="kbd">Esc</span> завершить</span>
+    </footer>
+  </div>
+
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h2 id="modalTitle">Вернуть фокус</h2>
+      <div id="modalContent"></div>
+      <div class="session-controls" style="justify-content:flex-end; margin-top:18px;">
+        <button class="btn btn-primary" id="modalPrimary" type="button">Вернуться в работу</button>
+        <button class="btn btn-ghost" id="modalClose" type="button">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Сохранено</div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const STORAGE_KEY = 'focus_os_markov_v1';
+      const DUMP_KEY = 'focus_os_distraction_dump_v1';
+      const CUSTOM_BREATH_KEY = 'focus_os_custom_breath_v1';
+      const QUOTES = [
+        'Фокус — это скорость возвращения.',
+        'Начни с одного действия.',
+        'Сначала дыхание. Потом работа.',
+        'Не дави. Собери внимание.',
+        'Тишина — это инструмент.',
+        'Минимум засчитывается.',
+        'Сделай следующий шаг.'
+      ];
+
+      const focusModes = {
+        quick: {
+          id: 'quick', name: 'Быстрый вход', breathMin: 3, workMin: 25, breakMin: 5,
+          description: 'Для входа в день, когда нужно начать без перегруза.',
+          meta: ['3 мин дыхания', '25 мин работы', '5 мин отдых']
+        },
+        deep: {
+          id: 'deep', name: 'Глубокая работа', breathMin: 5, workMin: 50, breakMin: 10,
+          description: 'Для серьёзной задачи, обучения, структуры и решений.',
+          meta: ['5 мин дыхания', '50 мин работы', '10 мин отдых']
+        },
+        ultra: {
+          id: 'ultra', name: 'Сверхфокус', breathMin: 7, workMin: 90, breakMin: 15,
+          description: 'Для важной работы без отвлечений и долгого погружения.',
+          meta: ['7 мин дыхания', '90 мин работы', '15 мин восстановление']
+        },
+        soft: {
+          id: 'soft', name: 'Мягкий режим', breathMin: 2, workMin: 15, breakMin: 3,
+          description: 'Для дней, когда мало сил. Цель — войти в процесс.',
+          meta: ['2 мин дыхания', '15 мин работы', '3 мин отдых']
+        },
+        night: {
+          id: 'night', name: 'Ночной спокойный фокус', breathMin: 3, workMin: 25, breakMin: 5,
+          description: 'Низкая яркость, спокойный звук, без агрессивных стимулов.',
+          meta: ['мягкое дыхание', '25 мин работы', 'низкая яркость']
+        }
+      };
+
+      const breathProtocols = {
+        coherent: {
+          id: 'coherent', name: 'Coherent Breathing', short: 'Резонансное дыхание', goal: 'спокойный фокус',
+          description: 'Мягкий режим для стабилизации состояния перед работой. Хорошо подходит для старта фокусной сессии.',
+          phases: [phase('inhale', 'Вдох', 5, 1.18), phase('exhale', 'Выдох', 5, 0.82)],
+          defaultMinutes: 3, visual: 'circle', tone: 180, color: '#D6B36A', meta: ['5с вдох', '5с выдох', 'без задержек']
+        },
+        box: {
+          id: 'box', name: 'Box Breathing', short: 'Квадратное дыхание', goal: 'собранность и контроль',
+          description: 'Режим для ситуации, когда нужно собрать внимание и убрать хаос перед задачей.',
+          phases: [phase('inhale', 'Вдох', 4, 1.14), phase('holdIn', 'Держи', 4, 1.14), phase('exhale', 'Выдох', 4, 0.84), phase('holdOut', 'Пауза', 4, 0.84)],
+          defaultMinutes: 3, visual: 'box', tone: 220, color: '#C9A24D', meta: ['4с вдох', '4с держи', '4с выдох', '4с пауза']
+        },
+        sigh: {
+          id: 'sigh', name: 'Physiological Sigh', short: 'Физиологический вздох', goal: 'быстрое снижение напряжения',
+          description: 'Быстрый сброс напряжения перед стартом. Подходит, если нервничаешь, залипаешь или не можешь начать.',
+          phases: [phase('inhale', 'Вдох', 1.2, 1.06), phase('topup', 'Довдох', 0.8, 1.2), phase('exhale', 'Длинный выдох', 5, 0.78)],
+          cycles: 8, defaultMinutes: 1, visual: 'wave', tone: 170, color: '#7EA6A1', meta: ['вдох', 'довдох', 'длинный выдох']
+        },
+        fourSevenEight: {
+          id: 'fourSevenEight', name: '4–7–8', short: 'Глубокое успокоение', goal: 'вечерний фокус',
+          description: 'Глубоко успокаивающий режим. Лучше использовать вечером или перед спокойной работой. Не делать агрессивно.',
+          warning: 'Если появляется дискомфорт или головокружение — остановись и вернись к обычному дыханию.',
+          phases: [phase('inhale', 'Вдох', 4, 1.12), phase('holdIn', 'Задержка', 7, 1.12), phase('exhale', 'Выдох', 8, 0.80)],
+          cycles: 4, defaultMinutes: 2, visual: 'circle', tone: 160, color: '#7EA6A1', meta: ['4с вдох', '7с задержка', '8с выдох']
+        },
+        tactical: {
+          id: 'tactical', name: 'Tactical Breathing', short: 'Рабочая собранность', goal: 'практичный старт',
+          description: 'Практичный режим перед задачей, созвоном, обучением или сложным решением.',
+          phases: [phase('inhale', 'Вдох', 4, 1.13), phase('exhale', 'Выдох', 6, 0.82)],
+          defaultMinutes: 3, visual: 'circle', tone: 200, color: '#D6B36A', meta: ['4с вдох', '6с выдох', 'без задержек']
+        },
+        energizing: {
+          id: 'energizing', name: 'Energizing Breath', short: 'Мягкая активация', goal: 'вялое состояние',
+          description: 'Для вялого состояния. Не делать слишком интенсивно. Без резких частых вдохов.',
+          warning: 'Не использовать при головокружении, панике, высоком давлении или дискомфорте.',
+          phases: [phase('inhale', 'Вдох', 3, 1.14), phase('exhale', 'Выдох', 3, 0.86)],
+          defaultMinutes: 1.5, visual: 'circle', tone: 260, color: '#D6B36A', meta: ['3с вдох', '3с выдох', '60–90 секунд']
+        },
+        custom: getCustomBreath()
+      };
+
+      const soundModes = {
+        silence: { id: 'silence', name: 'Полная тишина', type: 'silence', description: 'Без фона.' },
+        white: { id: 'white', name: 'Белый шум', type: 'noise', noise: 'white', description: 'Ровный светлый шум.' },
+        pink: { id: 'pink', name: 'Розовый шум', type: 'noise', noise: 'pink', description: 'Мягкий сбалансированный шум.' },
+        brown: { id: 'brown', name: 'Коричневый шум', type: 'noise', noise: 'brown', description: 'Глубокий низкий шум.' },
+        rain: { id: 'rain', name: 'Дождь', type: 'noise', noise: 'rain', description: 'Мягкий дождевой слой.' },
+        city: { id: 'city', name: 'Ночной город', type: 'noise', noise: 'city', description: 'Дальний городской фон.' },
+        ambient: { id: 'ambient', name: 'Мягкий ambient', type: 'ambient', description: 'Тёплый низкий фон.' }
+      };
+
+      const binauralModes = {
+        off: { id: 'off', name: 'Выключено', beat: 0, description: 'Без бинаурального слоя.' },
+        alpha: { id: 'alpha', name: 'Alpha Focus · 10 Hz', beat: 10, base: 180, description: 'Спокойный фокус, чтение, обучение.' },
+        beta: { id: 'beta', name: 'Beta Work · 16 Hz', beat: 16, base: 190, description: 'Активная работа, код, планирование, PM-задачи.' },
+        theta: { id: 'theta', name: 'Theta Creative · 6 Hz', beat: 6, base: 170, description: 'Идеи, письмо, творческая работа.' },
+        deep: { id: 'deep', name: 'Deep Calm · 7 Hz', beat: 7, base: 160, description: 'Вечерняя работа, мягкое погружение.' }
+      };
+
+      const presets = {
+        pm: {
+          id: 'pm', name: 'PM Deep Work', description: 'Project Management: обучение, структура, кейсы.',
+          mode: 'deep', breath: 'tactical', sound: 'brown', binaural: 'beta', task: 'Учить Project Management', result: 'Разобрать одну PM-тему и выписать тезисы', minimum: '10 минут и 5 тезисов', next: 'Открыть материал и выписать первый термин'
+        },
+        content: {
+          id: 'content', name: 'Content Creator Mode', description: 'Посты, сценарии, идеи, тексты.',
+          mode: 'deep', breath: 'coherent', sound: 'ambient', binaural: 'theta', workMin: 45, breakMin: 7, task: 'Создать контент', result: 'Собрать черновик идеи или поста', minimum: '10 минут и один абзац', next: 'Открыть заметку и написать первый абзац'
+        },
+        body: {
+          id: 'body', name: 'Body & Discipline Mode', description: 'Питание, тренировки, дисциплина.',
+          mode: 'quick', breath: 'box', sound: 'pink', binaural: 'alpha', workMin: 30, breakMin: 5, task: 'Планирование тела и дисциплины', result: 'Собрать один понятный план', minimum: '10 минут и 3 решения', next: 'Открыть трекер и записать первый пункт'
+        },
+        night: {
+          id: 'nightPreset', name: 'Night Focus', description: 'Спокойная вечерняя работа.',
+          mode: 'night', breath: 'coherent', sound: 'ambient', binaural: 'deep', task: 'Ночная спокойная работа', result: 'Закрыть одну мягкую задачу', minimum: '10 минут без телефона', next: 'Уменьшить яркость и открыть один документ'
+        },
+        emergency: {
+          id: 'emergency', name: 'Emergency Start', description: 'Когда не хочется начинать.',
+          mode: 'soft', breath: 'sigh', sound: 'brown', binaural: 'off', workMin: 10, breakMin: 3, task: 'Просто начать', result: 'Войти в процесс без давления', minimum: '5 минут', next: 'Сделать первое маленькое действие'
+        }
+      };
+
+      const microPauses = [
+        { id: 'eyes', name: 'Глаза', steps: ['20 секунд смотреть вдаль', 'расслабить челюсть', 'убрать напряжение со лба'] },
+        { id: 'body', name: 'Тело', steps: ['встать', 'расправить грудной отдел', '5 медленных вдохов', '10 шагов'] },
+        { id: 'nervous', name: 'Нервная система', steps: ['длинный выдох', 'расслабить плечи', '30 секунд тишины'] },
+        { id: 'reset', name: 'Быстрый сброс', steps: ['3 физиологических вздоха', 'вернуться к задаче'] }
+      ];
+
+      const state = {
+        selectedPreset: 'pm',
+        selectedMode: 'deep',
+        selectedBreath: 'tactical',
+        selectedSound: 'brown',
+        selectedBinaural: 'beta',
+        session: null,
+        timerId: null,
+        breathId: null,
+        lastTick: 0,
+        paused: false,
+        currentPhase: 'idle',
+        currentBreathPhaseIndex: 0,
+        breathPhaseRemaining: 0,
+        breathElapsedInPhase: 0,
+        distractionCount: 0,
+        actualWorkSeconds: 0,
+        reportText: '',
+        intentionConfirmed: false,
+        completionSaved: false
+      };
+
+      const $ = (selector) => document.querySelector(selector);
+      const $$ = (selector) => [...document.querySelectorAll(selector)];
+
+      const els = {
+        homeView: $('#homeView'), sessionView: $('#sessionView'), completionView: $('#completionView'),
+        presetGrid: $('#presetGrid'), modeGrid: $('#modeGrid'), breathGrid: $('#breathGrid'),
+        taskInput: $('#taskInput'), resultInput: $('#resultInput'), minimumInput: $('#minimumInput'), nextActionInput: $('#nextActionInput'), minimumSelect: $('#minimumSelect'), dumpInput: $('#dumpInput'),
+        soundSelect: $('#soundSelect'), binauralSelect: $('#binauralSelect'), volumeRange: $('#volumeRange'), metronomeRange: $('#metronomeRange'), volumeLabel: $('#volumeLabel'), metronomeLabel: $('#metronomeLabel'),
+        phasePill: $('#phasePill'), sessionTaskLine: $('#sessionTaskLine'), breathStage: $('#breathStage'), breathVisual: $('#breathVisual'), breathLabel: $('#breathLabel'), breathPhaseSeconds: $('#breathPhaseSeconds'),
+        mainTime: $('#mainTime'), timerCaption: $('#timerCaption'), timerRing: $('#timerRing'), progressCircle: $('#progressCircle'), sideTitle: $('#sideTitle'), sideText: $('#sideText'), sideList: $('#sideList'),
+        pauseBtn: $('#pauseBtn'), skipBreathBtn: $('#skipBreathBtn'), distractedBtn: $('#distractedBtn'), returnFocusBtn: $('#returnFocusBtn'), finishBtn: $('#finishBtn'), backHomeBtn: $('#backHomeBtn'),
+        modalBackdrop: $('#modalBackdrop'), modalTitle: $('#modalTitle'), modalContent: $('#modalContent'), modalPrimary: $('#modalPrimary'), modalClose: $('#modalClose'), toast: $('#toast'),
+        quickToday: $('#quickToday'), quickSessions: $('#quickSessions'), quickStreak: $('#quickStreak'), quickAvg: $('#quickAvg'), statsGrid: $('#statsGrid'),
+        resultGrid: $('#resultGrid'), completionStreak: $('#completionStreak'), doneInput: $('#doneInput'), focusScoreInput: $('#focusScoreInput'), improveInput: $('#improveInput'), finishQuote: $('#finishQuote')
+      };
+
+      class SoundEngine {
+        constructor() {
+          this.ctx = null;
+          this.master = null;
+          this.noiseGain = null;
+          this.binauralGain = null;
+          this.metroGain = null;
+          this.nodes = [];
+          this.noiseSource = null;
+          this.ambientNodes = [];
+          this.started = false;
+          this.currentVolume = 0.2;
+          this.currentMetronome = 0.25;
+        }
+
+        ensure() {
+          if (!this.ctx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) throw new Error('Web Audio API не поддерживается этим браузером.');
+            this.ctx = new AudioContext();
+            this.master = this.ctx.createGain();
+            this.noiseGain = this.ctx.createGain();
+            this.binauralGain = this.ctx.createGain();
+            this.metroGain = this.ctx.createGain();
+            this.noiseGain.gain.value = 0;
+            this.binauralGain.gain.value = 0;
+            this.metroGain.gain.value = 0;
+            this.noiseGain.connect(this.master);
+            this.binauralGain.connect(this.master);
+            this.metroGain.connect(this.master);
+            this.master.gain.value = 0.9;
+            this.master.connect(this.ctx.destination);
+          }
+          if (this.ctx.state === 'suspended') return this.ctx.resume();
+          return Promise.resolve();
+        }
+
+        setVolumes(soundVol, metroVol) {
+          this.currentVolume = clamp(soundVol, 0, 1);
+          this.currentMetronome = clamp(metroVol, 0, 1);
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          this.noiseGain.gain.setTargetAtTime(this.currentVolume * 0.32, now, 0.04);
+          this.binauralGain.gain.setTargetAtTime(this.currentVolume * 0.12, now, 0.04);
+          this.metroGain.gain.setTargetAtTime(this.currentMetronome * 0.25, now, 0.04);
+        }
+
+        async start(soundId, binauralId) {
+          await this.ensure();
+          this.stop(0.05);
+          await wait(70);
+          await this.ensure();
+          const sound = soundModes[soundId] || soundModes.silence;
+          const binaural = binauralModes[binauralId] || binauralModes.off;
+          this.started = true;
+
+          if (sound.type === 'noise') this.startNoise(sound.noise);
+          if (sound.type === 'ambient') this.startAmbient();
+          if (binaural.beat > 0) this.startBinaural(binaural.base, binaural.beat);
+          this.fadeIn(10);
+        }
+
+        stop(seconds = 3) {
+          if (!this.ctx) return;
+          this.fadeOut(seconds);
+          const nodesToStop = [...this.nodes, ...this.ambientNodes];
+          window.setTimeout(() => {
+            nodesToStop.forEach(n => {
+              try { if (typeof n.stop === 'function') n.stop(); } catch (_) {}
+              try { if (typeof n.disconnect === 'function') n.disconnect(); } catch (_) {}
+            });
+            this.nodes = [];
+            this.ambientNodes = [];
+            this.noiseSource = null;
+          }, Math.max(80, seconds * 1000 + 80));
+        }
+
+        fadeIn(seconds = 10) {
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          this.noiseGain.gain.cancelScheduledValues(now);
+          this.binauralGain.gain.cancelScheduledValues(now);
+          this.noiseGain.gain.setValueAtTime(0.0001, now);
+          this.binauralGain.gain.setValueAtTime(0.0001, now);
+          this.noiseGain.gain.linearRampToValueAtTime(this.currentVolume * 0.32, now + seconds);
+          this.binauralGain.gain.linearRampToValueAtTime(this.currentVolume * 0.12, now + seconds);
+          this.metroGain.gain.setTargetAtTime(this.currentMetronome * 0.25, now, 0.08);
+        }
+
+        fadeOut(seconds = 10) {
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          [this.noiseGain, this.binauralGain, this.metroGain].forEach(g => {
+            g.gain.cancelScheduledValues(now);
+            g.gain.setValueAtTime(g.gain.value, now);
+            g.gain.linearRampToValueAtTime(0.0001, now + seconds);
+          });
+        }
+
+        startNoise(kind) {
+          const buffer = this.createNoiseBuffer(kind);
+          const source = this.ctx.createBufferSource();
+          const filter = this.ctx.createBiquadFilter();
+          const gain = this.ctx.createGain();
+          source.buffer = buffer;
+          source.loop = true;
+          filter.type = kind === 'brown' || kind === 'city' ? 'lowpass' : 'bandpass';
+          filter.frequency.value = kind === 'white' ? 4200 : kind === 'pink' ? 1900 : kind === 'rain' ? 2600 : kind === 'city' ? 520 : 720;
+          filter.Q.value = kind === 'rain' ? 0.55 : 0.8;
+          gain.gain.value = kind === 'white' ? 0.55 : kind === 'rain' ? 0.7 : 0.75;
+          source.connect(filter);
+          filter.connect(gain);
+          gain.connect(this.noiseGain);
+          source.start();
+          this.nodes.push(source, filter, gain);
+        }
+
+        createNoiseBuffer(kind) {
+          const length = this.ctx.sampleRate * 4;
+          const buffer = this.ctx.createBuffer(2, length, this.ctx.sampleRate);
+          for (let channel = 0; channel < 2; channel++) {
+            const data = buffer.getChannelData(channel);
+            let last = 0;
+            let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+            for (let i = 0; i < length; i++) {
+              const white = Math.random() * 2 - 1;
+              if (kind === 'pink' || kind === 'rain') {
+                b0 = 0.99886 * b0 + white * 0.0555179;
+                b1 = 0.99332 * b1 + white * 0.0750759;
+                b2 = 0.96900 * b2 + white * 0.1538520;
+                b3 = 0.86650 * b3 + white * 0.3104856;
+                b4 = 0.55000 * b4 + white * 0.5329522;
+                b5 = -0.7616 * b5 - white * 0.0168980;
+                data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
+                b6 = white * 0.115926;
+                if (kind === 'rain') data[i] += (Math.random() > 0.992 ? Math.random() * 0.35 : 0) * 0.18;
+              } else if (kind === 'brown' || kind === 'city') {
+                last = (last + (0.02 * white)) / 1.02;
+                data[i] = last * 3.5;
+                if (kind === 'city') data[i] += Math.sin(i / 1300) * 0.012 + (Math.random() > 0.997 ? Math.random() * 0.08 : 0);
+              } else {
+                data[i] = white * 0.45;
+              }
+            }
+          }
+          return buffer;
+        }
+
+        startAmbient() {
+          const freqs = [82, 110, 146.8, 196];
+          freqs.forEach((freq, index) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            const filter = this.ctx.createBiquadFilter();
+            const pan = this.ctx.createStereoPanner();
+            osc.type = index % 2 ? 'triangle' : 'sine';
+            osc.frequency.value = freq;
+            osc.detune.value = (Math.random() * 8 - 4);
+            filter.type = 'lowpass';
+            filter.frequency.value = 520 + index * 90;
+            gain.gain.value = 0.035;
+            pan.pan.value = [-0.45, 0.35, -0.2, 0.5][index];
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(pan);
+            pan.connect(this.noiseGain);
+            osc.start();
+            this.ambientNodes.push(osc, filter, gain, pan);
+          });
+          this.startNoise('brown');
+        }
+
+        startBinaural(base, beat) {
+          const left = this.ctx.createOscillator();
+          const right = this.ctx.createOscillator();
+          const leftGain = this.ctx.createGain();
+          const rightGain = this.ctx.createGain();
+          const leftPan = this.ctx.createStereoPanner();
+          const rightPan = this.ctx.createStereoPanner();
+          left.type = 'sine';
+          right.type = 'sine';
+          left.frequency.value = base;
+          right.frequency.value = base + beat;
+          leftGain.gain.value = 0.18;
+          rightGain.gain.value = 0.18;
+          leftPan.pan.value = -1;
+          rightPan.pan.value = 1;
+          left.connect(leftGain); leftGain.connect(leftPan); leftPan.connect(this.binauralGain);
+          right.connect(rightGain); rightGain.connect(rightPan); rightPan.connect(this.binauralGain);
+          left.start(); right.start();
+          this.nodes.push(left, right, leftGain, rightGain, leftPan, rightPan);
+        }
+
+        tick(freq = 520, duration = 0.06) {
+          if (!this.ctx || this.currentMetronome <= 0) return;
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.exponentialRampToValueAtTime(Math.max(0.001, this.currentMetronome * 0.22), now + 0.012);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+          osc.connect(gain);
+          gain.connect(this.metroGain);
+          osc.start(now);
+          osc.stop(now + duration + 0.03);
+        }
+      }
+
+      const soundEngine = new SoundEngine();
+
+      function phase(key, label, seconds, scale) { return { key, label, seconds, scale }; }
+      function clamp(value, min, max) { return Math.min(max, Math.max(min, Number(value) || 0)); }
+      function wait(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+      function minutesToSeconds(min) { return Math.round(Number(min) * 60); }
+      function formatTime(seconds) {
+        const s = Math.max(0, Math.round(seconds));
+        const h = Math.floor(s / 3600);
+        const m = Math.floor((s % 3600) / 60);
+        const sec = s % 60;
+        if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+        return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+      }
+      function humanMinutes(seconds) {
+        const m = Math.round(seconds / 60);
+        if (m < 60) return `${m}м`;
+        const h = Math.floor(m / 60);
+        const r = m % 60;
+        return r ? `${h}ч ${r}м` : `${h}ч`;
+      }
+      function todayKey(date = new Date()) { return date.toISOString().slice(0, 10); }
+      function parseDateKey(key) { return new Date(`${key}T12:00:00`); }
+
+      function getCustomBreath() {
+        const fallback = {
+          id: 'custom', name: 'Мой режим', short: 'Настраиваемый протокол', goal: 'под себя',
+          description: 'Настрой вдох, задержку, выдох, паузу и количество циклов.',
+          phases: [phase('inhale', 'Вдох', 4, 1.13), phase('exhale', 'Выдох', 6, 0.82)],
+          cycles: 18, defaultMinutes: 3, visual: 'circle', tone: 210, color: '#D6B36A', meta: ['свой паттерн', 'свои циклы', 'свой цвет']
+        };
+        try {
+          const saved = JSON.parse(localStorage.getItem(CUSTOM_BREATH_KEY));
+          if (!saved) return fallback;
+          return { ...fallback, ...saved, id: 'custom' };
+        } catch (_) { return fallback; }
+      }
+
+      function getStore() {
+        try {
+          const raw = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (!raw || !Array.isArray(raw.sessions)) return { sessions: [] };
+          return raw;
+        } catch (_) { return { sessions: [] }; }
+      }
+
+      function saveStore(store) { localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); }
+
+      function showToast(text = 'Готово') {
+        els.toast.textContent = text;
+        els.toast.classList.add('show');
+        window.clearTimeout(showToast._timer);
+        showToast._timer = window.setTimeout(() => els.toast.classList.remove('show'), 1800);
+      }
+
+      function renderCards() {
+        els.presetGrid.innerHTML = Object.values(presets).map(p => `
+          <button class="select-card ${state.selectedPreset === p.id ? 'active' : ''}" data-preset="${p.id}" type="button">
+            <h3>${p.name}</h3>
+            <p>${p.description}</p>
+            <div class="select-meta"><span>${focusModes[p.mode].workMin || p.workMin} мин работа</span><span>${breathProtocols[p.breath].short}</span><span>${binauralModes[p.binaural].name}</span></div>
+          </button>`).join('');
+
+        els.modeGrid.innerHTML = Object.values(focusModes).map(m => `
+          <button class="select-card ${state.selectedMode === m.id ? 'active' : ''}" data-mode="${m.id}" type="button">
+            <h3>${m.name}</h3>
+            <p>${m.description}</p>
+            <div class="select-meta">${m.meta.map(x => `<span>${x}</span>`).join('')}</div>
+          </button>`).join('');
+
+        els.breathGrid.innerHTML = Object.values(breathProtocols).map(b => `
+          <button class="select-card ${state.selectedBreath === b.id ? 'active' : ''}" data-breath="${b.id}" type="button" style="--local-accent:${b.color}">
+            <h3>${b.short}</h3>
+            <p>${b.description}</p>
+            <div class="select-meta">${b.meta.map(x => `<span>${x}</span>`).join('')}</div>
+            ${b.warning ? `<p style="margin-top:10px;color:#FFD9D9;font-size:12px;">${b.warning}</p>` : ''}
+          </button>`).join('');
+
+        els.soundSelect.innerHTML = Object.values(soundModes).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+        els.binauralSelect.innerHTML = Object.values(binauralModes).map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+        els.soundSelect.value = state.selectedSound;
+        els.binauralSelect.value = state.selectedBinaural;
+      }
+
+      function selectPreset(id) {
+        const p = presets[id];
+        if (!p) return;
+        state.selectedPreset = id;
+        state.selectedMode = p.mode;
+        state.selectedBreath = p.breath;
+        state.selectedSound = p.sound;
+        state.selectedBinaural = p.binaural;
+        if (!els.taskInput.value.trim()) els.taskInput.value = p.task;
+        if (!els.resultInput.value.trim()) els.resultInput.value = p.result;
+        if (!els.minimumInput.value.trim()) els.minimumInput.value = p.minimum;
+        if (!els.nextActionInput.value.trim()) els.nextActionInput.value = p.next;
+        if (id === 'nightPreset') document.body.classList.add('night-mode');
+        renderCards();
+      }
+
+      function bindEvents() {
+        document.addEventListener('click', (e) => {
+          const presetBtn = e.target.closest('[data-preset]');
+          const modeBtn = e.target.closest('[data-mode]');
+          const breathBtn = e.target.closest('[data-breath]');
+          const scrollBtn = e.target.closest('[data-scroll]');
+          if (presetBtn) selectPreset(presetBtn.dataset.preset);
+          if (modeBtn) { state.selectedMode = modeBtn.dataset.mode; renderCards(); }
+          if (breathBtn) { state.selectedBreath = breathBtn.dataset.breath; renderCards(); }
+          if (scrollBtn) document.querySelector(scrollBtn.dataset.scroll)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        $('#heroStartBtn').addEventListener('click', () => $('#setupScreen').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+        $('#heroSettingsBtn').addEventListener('click', () => $('#setupScreen').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+        $('#nightToggle').addEventListener('click', () => document.body.classList.toggle('night-mode'));
+        $('#startSessionBtn').addEventListener('click', startSession);
+        $('#testSoundBtn').addEventListener('click', testSound);
+        $('#saveCustomBreath').addEventListener('click', saveCustomBreath);
+        $('#intentionCheck').addEventListener('click', () => {
+          state.intentionConfirmed = !state.intentionConfirmed;
+          $('#intentionCheck').classList.toggle('btn-primary', state.intentionConfirmed);
+          showToast(state.intentionConfirmed ? 'Намерение подтверждено' : 'Намерение снято');
+        });
+
+        els.soundSelect.addEventListener('change', (e) => { state.selectedSound = e.target.value; });
+        els.binauralSelect.addEventListener('change', (e) => { state.selectedBinaural = e.target.value; });
+        els.volumeRange.addEventListener('input', updateVolumes);
+        els.metronomeRange.addEventListener('input', updateVolumes);
+
+        els.pauseBtn.addEventListener('click', togglePause);
+        els.skipBreathBtn.addEventListener('click', confirmSkipBreathing);
+        els.distractedBtn.addEventListener('click', showDistractionProtocol);
+        els.returnFocusBtn.addEventListener('click', showReturnProtocol);
+        els.finishBtn.addEventListener('click', () => finishSession(false));
+        els.backHomeBtn.addEventListener('click', () => finishSession(true));
+        els.modalClose.addEventListener('click', closeModal);
+        els.modalPrimary.addEventListener('click', () => { closeModal(); state.paused = false; els.pauseBtn.textContent = 'Пауза'; });
+
+        $('#saveResultBtn').addEventListener('click', saveCompletion);
+        $('#copyReportBtn').addEventListener('click', copyReport);
+        $('#newSessionBtn').addEventListener('click', () => {
+          els.completionView.classList.add('hidden');
+          els.homeView.classList.remove('hidden');
+          $('#setupScreen').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        $('#resetStatsBtn').addEventListener('click', resetStats);
+
+        document.addEventListener('keydown', (e) => {
+          if (!els.sessionView.classList.contains('hidden')) {
+            if (e.code === 'Space') { e.preventDefault(); togglePause(); }
+            if (e.key.toLowerCase() === 'f') showReturnProtocol();
+            if (e.key === 'Escape') finishSession(false);
+          }
+        });
+      }
+
+      function updateVolumes() {
+        els.volumeLabel.textContent = `${els.volumeRange.value}%`;
+        els.metronomeLabel.textContent = `${els.metronomeRange.value}%`;
+        soundEngine.setVolumes(Number(els.volumeRange.value) / 100, Number(els.metronomeRange.value) / 100);
+      }
+
+      async function testSound() {
+        updateVolumes();
+        try {
+          await soundEngine.start(els.soundSelect.value, els.binauralSelect.value);
+          showToast('Звук включён на 5 секунд');
+          setTimeout(() => soundEngine.stop(2), 5000);
+        } catch (error) {
+          showToast(error.message || 'Не удалось запустить звук');
+        }
+      }
+
+      function saveCustomBreath() {
+        const phases = [];
+        const inhale = clamp($('#customInhale').value, 0, 30);
+        const holdIn = clamp($('#customHoldIn').value, 0, 30);
+        const exhale = clamp($('#customExhale').value, 1, 40);
+        const holdOut = clamp($('#customHoldOut').value, 0, 30);
+        if (inhale > 0) phases.push(phase('inhale', 'Вдох', inhale, 1.14));
+        if (holdIn > 0) phases.push(phase('holdIn', 'Задержка', holdIn, 1.14));
+        phases.push(phase('exhale', 'Выдох', exhale, 0.82));
+        if (holdOut > 0) phases.push(phase('holdOut', 'Пауза', holdOut, 0.82));
+        const custom = {
+          name: $('#customName').value.trim() || 'Мой режим',
+          short: $('#customName').value.trim() || 'Мой режим',
+          phases,
+          cycles: clamp($('#customCycles').value, 1, 99),
+          color: $('#customColor').value || '#D6B36A',
+          tone: 210,
+          description: 'Пользовательский протокол дыхания под текущую задачу.',
+          meta: [`${inhale}с вдох`, `${exhale}с выдох`, `${clamp($('#customCycles').value, 1, 99)} циклов`]
+        };
+        localStorage.setItem(CUSTOM_BREATH_KEY, JSON.stringify(custom));
+        breathProtocols.custom = getCustomBreath();
+        state.selectedBreath = 'custom';
+        renderCards();
+        showToast('Мой режим сохранён');
+      }
+
+      function buildSessionConfig() {
+        const modeBase = { ...focusModes[state.selectedMode] };
+        const preset = presets[state.selectedPreset] || {};
+        const workMin = preset.workMin && preset.mode === state.selectedMode ? preset.workMin : modeBase.workMin;
+        const breakMin = preset.breakMin && preset.mode === state.selectedMode ? preset.breakMin : modeBase.breakMin;
+        const breath = breathProtocols[state.selectedBreath];
+        let breathSeconds = minutesToSeconds(modeBase.breathMin || breath.defaultMinutes || 3);
+        if (breath.cycles) breathSeconds = breath.cycles * breath.phases.reduce((sum, p) => sum + p.seconds, 0);
+        const minEntry = Number(els.minimumSelect.value || 10);
+        const task = els.taskInput.value.trim() || preset.task || 'Фокусная работа';
+        const result = els.resultInput.value.trim() || preset.result || 'Продвинуть задачу';
+        const minimum = els.minimumInput.value.trim() || preset.minimum || `${minEntry} минут без отвлечений`;
+        const next = els.nextActionInput.value.trim() || preset.next || 'Сделать первое маленькое действие';
+        return {
+          startedAt: new Date().toISOString(),
+          task, result, minimum, next,
+          minEntry,
+          breathId: state.selectedBreath,
+          breathName: breath.short,
+          modeId: state.selectedMode,
+          modeName: modeBase.name,
+          soundId: state.selectedSound,
+          soundName: soundModes[state.selectedSound].name,
+          binauralId: state.selectedBinaural,
+          binauralName: binauralModes[state.selectedBinaural].name,
+          breathSeconds,
+          workSeconds: minutesToSeconds(workMin),
+          breakSeconds: minutesToSeconds(breakMin),
+          phaseRemaining: breathSeconds,
+          phaseTotal: breathSeconds,
+          breakPlan: microPauses[Math.floor(Math.random() * microPauses.length)],
+          dump: els.dumpInput.value.trim(),
+          intentionConfirmed: state.intentionConfirmed,
+          completed: false
+        };
+      }
+
+      async function startSession() {
+        state.session = buildSessionConfig();
+        state.currentPhase = 'breathing';
+        state.distractionCount = 0;
+        state.actualWorkSeconds = 0;
+        state.paused = false;
+        state.completionSaved = false;
+        if (state.session.dump) saveDump(state.session.dump);
+        if (state.session.modeId === 'night') document.body.classList.add('night-mode');
+        updateVolumes();
+        try { await soundEngine.start(state.session.soundId, state.session.binauralId); }
+        catch (error) { showToast(error.message || 'Звук не запущен'); }
+        els.homeView.classList.add('hidden');
+        els.completionView.classList.add('hidden');
+        els.sessionView.classList.remove('hidden');
+        document.body.classList.add('focus-dim');
+        els.sessionTaskLine.innerHTML = `<strong>Задача:</strong> ${escapeHtml(state.session.task)} · <strong>Минимум:</strong> ${escapeHtml(state.session.minimum)}`;
+        state.lastTick = performance.now();
+        setupBreathing();
+        renderPhase();
+        startLoop();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function startLoop() {
+        clearInterval(state.timerId);
+        state.lastTick = performance.now();
+        state.timerId = setInterval(() => {
+          const now = performance.now();
+          const delta = Math.min(2, (now - state.lastTick) / 1000);
+          state.lastTick = now;
+          if (state.paused || !state.session) return;
+          tickSession(delta);
+        }, 250);
+      }
+
+      function tickSession(delta) {
+        state.session.phaseRemaining = Math.max(0, state.session.phaseRemaining - delta);
+        if (state.currentPhase === 'work') state.actualWorkSeconds += delta;
+        if (state.currentPhase === 'breathing') tickBreathing(delta);
+        renderPhase();
+        if (state.session.phaseRemaining <= 0.05) nextPhase();
+      }
+
+      function nextPhase() {
+        soundEngine.tick(640, 0.12);
+        if (state.currentPhase === 'breathing') {
+          state.currentPhase = 'work';
+          state.session.phaseRemaining = state.session.workSeconds;
+          state.session.phaseTotal = state.session.workSeconds;
+          clearInterval(state.breathId);
+          renderPhase();
+          showToast('Рабочая фаза началась');
+        } else if (state.currentPhase === 'work') {
+          state.currentPhase = 'break';
+          state.session.phaseRemaining = state.session.breakSeconds;
+          state.session.phaseTotal = state.session.breakSeconds;
+          showToast('Микропауза. Не превращай её в прокрастинацию.');
+        } else if (state.currentPhase === 'break') {
+          finishSession(false);
+        }
+      }
+
+      function setupBreathing() {
+        const breath = breathProtocols[state.session.breathId];
+        state.currentBreathPhaseIndex = 0;
+        state.breathPhaseRemaining = breath.phases[0].seconds;
+        state.breathElapsedInPhase = 0;
+        els.breathVisual.style.setProperty('--phase-duration', `${breath.phases[0].seconds}s`);
+        els.breathVisual.style.setProperty('--breath-scale', breath.phases[0].scale);
+        els.breathVisual.style.borderColor = `${breath.color}55`;
+        els.breathVisual.classList.toggle('box-mode', breath.visual === 'box');
+        updateBreathLabel();
+      }
+
+      function tickBreathing(delta) {
+        const breath = breathProtocols[state.session.breathId];
+        state.breathPhaseRemaining -= delta;
+        state.breathElapsedInPhase += delta;
+        if (state.breathPhaseRemaining <= 0) {
+          state.currentBreathPhaseIndex = (state.currentBreathPhaseIndex + 1) % breath.phases.length;
+          const p = breath.phases[state.currentBreathPhaseIndex];
+          state.breathPhaseRemaining = p.seconds;
+          state.breathElapsedInPhase = 0;
+          els.breathVisual.style.setProperty('--phase-duration', `${p.seconds}s`);
+          els.breathVisual.style.setProperty('--breath-scale', p.scale);
+          soundEngine.tick(p.key === 'exhale' ? 360 : 560, 0.055);
+          updateBreathLabel();
+        }
+        els.breathPhaseSeconds.textContent = Math.ceil(state.breathPhaseRemaining);
+      }
+
+      function updateBreathLabel() {
+        const breath = breathProtocols[state.session.breathId];
+        const p = breath.phases[state.currentBreathPhaseIndex];
+        els.breathLabel.textContent = p.label;
+        els.breathPhaseSeconds.textContent = Math.ceil(p.seconds);
+      }
+
+      function renderPhase() {
+        const s = state.session;
+        if (!s) return;
+        const remaining = Math.max(0, s.phaseRemaining);
+        const progress = s.phaseTotal ? (1 - remaining / s.phaseTotal) : 0;
+        els.mainTime.textContent = formatTime(remaining);
+        els.timerRing.style.setProperty('--dash', String(1000 - 1000 * progress));
+
+        const phaseLabel = state.currentPhase === 'breathing' ? 'Подготовка' : state.currentPhase === 'work' ? 'Работа' : state.currentPhase === 'break' ? 'Микропауза' : 'Завершение';
+        els.phasePill.textContent = phaseLabel;
+        els.skipBreathBtn.classList.toggle('hidden', state.currentPhase !== 'breathing');
+        els.distractedBtn.classList.toggle('hidden', state.currentPhase !== 'work');
+        els.returnFocusBtn.classList.toggle('hidden', state.currentPhase !== 'work');
+        els.breathStage.classList.toggle('hidden', state.currentPhase !== 'breathing');
+
+        if (state.currentPhase === 'breathing') {
+          const breath = breathProtocols[s.breathId];
+          els.timerCaption.textContent = `${breath.short} · ${breath.goal}`;
+          els.sideTitle.textContent = 'Breathing Engine';
+          els.sideText.textContent = breath.warning || 'Дыши ровно. Не форсируй. Фокус возвращается через выдох.';
+          els.sideList.innerHTML = [
+            `Протокол: ${breath.name}`,
+            `Звук: ${s.soundName}`,
+            `Бинауральный слой: ${s.binauralName}`
+          ].map(x => `<div>${escapeHtml(x)}</div>`).join('');
+        } else if (state.currentPhase === 'work') {
+          els.timerCaption.textContent = s.next ? `Следующее действие: ${s.next}` : 'Начни с одного действия.';
+          els.sideTitle.textContent = 'Focus Timer';
+          els.sideText.textContent = 'Фокус — это не отсутствие отвлечений. Фокус — это скорость возвращения.';
+          els.sideList.innerHTML = [
+            `Результат: ${s.result}`,
+            `Минимум: ${s.minimum}`,
+            `Отвлечений: ${state.distractionCount}`
+          ].map(x => `<div>${escapeHtml(x)}</div>`).join('');
+        } else if (state.currentPhase === 'break') {
+          const bp = s.breakPlan;
+          els.timerCaption.textContent = 'Пауза 3–10 минут. Потом мягко вернись в фокус.';
+          els.sideTitle.textContent = `Микропауза: ${bp.name}`;
+          els.sideText.textContent = 'Пауза не должна превращаться в прокрастинацию.';
+          els.sideList.innerHTML = bp.steps.map(x => `<div>${escapeHtml(x)}</div>`).join('');
+        }
+      }
+
+      function togglePause() {
+        if (!state.session) return;
+        state.paused = !state.paused;
+        els.pauseBtn.textContent = state.paused ? 'Продолжить' : 'Пауза';
+        if (state.paused) soundEngine.fadeOut(1.2); else soundEngine.fadeIn(2.5);
+      }
+
+      function confirmSkipBreathing() {
+        showModal('Пропустить дыхание?', `
+          <p>Можно сразу начать работу. Но короткая подготовка помогает отделить рабочую сессию от хаоса дня.</p>
+          <p><strong style="color:var(--text);">Мягкий вариант:</strong> сделай один длинный выдох и начни с первого действия.</p>
+        `, () => {
+          closeModal();
+          if (!state.session) return;
+          state.currentPhase = 'work';
+          state.session.phaseRemaining = state.session.workSeconds;
+          state.session.phaseTotal = state.session.workSeconds;
+          renderPhase();
+        }, 'Начать работу');
+      }
+
+      function showDistractionProtocol() {
+        state.distractionCount += 1;
+        state.paused = true;
+        els.pauseBtn.textContent = 'Продолжить';
+        soundEngine.fadeOut(0.8);
+        showModal('Я отвлёкся', `
+          <ol>
+            <li>Заметь отвлечение.</li>
+            <li>Сделай один длинный выдох.</li>
+            <li>Вернись к следующему маленькому действию.</li>
+          </ol>
+          <p><strong style="color:var(--text);">Фокус — это не отсутствие отвлечений. Фокус — это скорость возвращения.</strong></p>
+        `, () => {
+          closeModal();
+          state.paused = false;
+          els.pauseBtn.textContent = 'Пауза';
+          soundEngine.fadeIn(2);
+        }, 'Вернуться в работу');
+      }
+
+      function showReturnProtocol() {
+        showModal('Вернуть фокус', `
+          <p>Один длинный выдох. Расслабь плечи. Верни взгляд в задачу.</p>
+          <p><strong style="color:var(--text);">Следующее действие:</strong> ${escapeHtml(state.session?.next || 'сделать первый маленький шаг')}</p>
+        `, () => {
+          closeModal();
+          state.paused = false;
+          els.pauseBtn.textContent = 'Пауза';
+          soundEngine.fadeIn(2);
+        }, 'Вернуть фокус');
+      }
+
+      function showModal(title, html, primaryAction, primaryText = 'Готово') {
+        els.modalTitle.textContent = title;
+        els.modalContent.innerHTML = html;
+        els.modalPrimary.textContent = primaryText;
+        els.modalPrimary.onclick = primaryAction;
+        els.modalBackdrop.classList.remove('hidden');
+      }
+
+      function closeModal() { els.modalBackdrop.classList.add('hidden'); }
+
+      function finishSession(exitOnly = false) {
+        if (!state.session) {
+          els.homeView.classList.remove('hidden');
+          els.sessionView.classList.add('hidden');
+          document.body.classList.remove('focus-dim');
+          return;
+        }
+        clearInterval(state.timerId);
+        clearInterval(state.breathId);
+        soundEngine.stop(4);
+        document.body.classList.remove('focus-dim');
+        els.sessionView.classList.add('hidden');
+        if (exitOnly) {
+          els.homeView.classList.remove('hidden');
+          return;
+        }
+        state.session.completedAt = new Date().toISOString();
+        state.session.completed = true;
+        state.session.workedSeconds = Math.round(state.actualWorkSeconds);
+        state.session.distractions = state.distractionCount;
+        els.completionView.classList.remove('hidden');
+        els.homeView.classList.add('hidden');
+        renderCompletion();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function renderCompletion() {
+        const s = state.session;
+        const stats = calculateStats(getStore().sessions);
+        els.completionStreak.textContent = `Streak: ${stats.streak}`;
+        els.finishQuote.textContent = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+        els.doneInput.value = s.result ? `Продвинул задачу: ${s.result}` : '';
+        els.improveInput.value = '';
+        els.focusScoreInput.value = state.distractionCount > 2 ? 7 : 8;
+        els.resultGrid.innerHTML = [
+          ['Время работы', humanMinutes(s.workedSeconds || 0)],
+          ['Отвлечения', String(s.distractions || 0)],
+          ['Задача', s.task],
+          ['Фокус', `${els.focusScoreInput.value}/10`],
+          ['Звук', s.soundName],
+          ['Дыхание', s.breathName]
+        ].map(([label, value]) => `<div class="result-card"><strong>${escapeHtml(value)}</strong><span>${escapeHtml(label)}</span></div>`).join('');
+        buildReportText();
+      }
+
+      function buildReportText() {
+        const s = state.session;
+        if (!s) return '';
+        const done = els.doneInput.value.trim() || '—';
+        const focus = clamp(els.focusScoreInput.value, 1, 10);
+        const improve = els.improveInput.value.trim() || '—';
+        state.reportText = [
+          'FOCUS OS · Отчёт сессии',
+          `Дата: ${new Date().toLocaleString('ru-RU')}`,
+          `Задача: ${s.task}`,
+          `Ожидаемый результат: ${s.result}`,
+          `Минимум: ${s.minimum}`,
+          `Следующее действие: ${s.next}`,
+          `Время работы: ${humanMinutes(s.workedSeconds || 0)}`,
+          `Отвлечения: ${s.distractions || 0}`,
+          `Фокус: ${focus}/10`,
+          `Дыхание: ${s.breathName}`,
+          `Звук: ${s.soundName}`,
+          `Что сделал: ${done}`,
+          `Что улучшить: ${improve}`
+        ].join('\n');
+        return state.reportText;
+      }
+
+      function saveCompletion() {
+        if (!state.session || state.completionSaved) {
+          showToast(state.completionSaved ? 'Уже сохранено' : 'Нет активной сессии');
+          return;
+        }
+        buildReportText();
+        const focusScore = clamp(els.focusScoreInput.value, 1, 10);
+        const store = getStore();
+        const record = {
+          id: cryptoRandomId(),
+          date: todayKey(),
+          startedAt: state.session.startedAt,
+          completedAt: new Date().toISOString(),
+          task: state.session.task,
+          result: state.session.result,
+          minimum: state.session.minimum,
+          next: state.session.next,
+          done: els.doneInput.value.trim(),
+          improve: els.improveInput.value.trim(),
+          focusScore,
+          workedSeconds: Math.max(0, Math.round(state.session.workedSeconds || 0)),
+          plannedWorkSeconds: state.session.workSeconds,
+          distractions: state.session.distractions || 0,
+          breathId: state.session.breathId,
+          breathName: state.session.breathName,
+          soundId: state.session.soundId,
+          soundName: state.session.soundName,
+          binauralId: state.session.binauralId,
+          binauralName: state.session.binauralName,
+          report: state.reportText
+        };
+        store.sessions.push(record);
+        saveStore(store);
+        state.completionSaved = true;
+        renderStats();
+        showToast('Результат сохранён');
+      }
+
+      async function copyReport() {
+        buildReportText();
+        try {
+          await navigator.clipboard.writeText(state.reportText);
+          showToast('Отчёт скопирован');
+        } catch (_) {
+          const ta = document.createElement('textarea');
+          ta.value = state.reportText;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          ta.remove();
+          showToast('Отчёт скопирован');
+        }
+      }
+
+      function saveDump(text) {
+        const dumps = getDumps();
+        dumps.push({ date: new Date().toISOString(), text });
+        localStorage.setItem(DUMP_KEY, JSON.stringify(dumps.slice(-50)));
+      }
+
+      function getDumps() {
+        try { return JSON.parse(localStorage.getItem(DUMP_KEY)) || []; }
+        catch (_) { return []; }
+      }
+
+      function calculateStats(sessions) {
+        const today = todayKey();
+        const todaySessions = sessions.filter(s => s.date === today);
+        const todaySeconds = todaySessions.reduce((sum, s) => sum + (s.workedSeconds || 0), 0);
+        const weekStart = new Date();
+        weekStart.setDate(weekStart.getDate() - 6);
+        weekStart.setHours(0, 0, 0, 0);
+        const weekSeconds = sessions.filter(s => parseDateKey(s.date) >= weekStart).reduce((sum, s) => sum + (s.workedSeconds || 0), 0);
+        const totalSeconds = sessions.reduce((sum, s) => sum + (s.workedSeconds || 0), 0);
+        const avgFocus = sessions.length ? sessions.reduce((sum, s) => sum + (Number(s.focusScore) || 0), 0) / sessions.length : 0;
+        const byDay = sessions.reduce((acc, s) => { acc[s.date] = (acc[s.date] || 0) + (s.workedSeconds || 0); return acc; }, {});
+        const bestDayEntry = Object.entries(byDay).sort((a, b) => b[1] - a[1])[0];
+        const favoriteBreath = favorite(sessions.map(s => s.breathName).filter(Boolean));
+        const favoriteSound = favorite(sessions.map(s => s.soundName).filter(Boolean));
+        return {
+          todaySeconds,
+          weekSeconds,
+          totalSeconds,
+          sessions: sessions.length,
+          avgFocus,
+          bestDay: bestDayEntry ? `${bestDayEntry[0]} · ${humanMinutes(bestDayEntry[1])}` : '—',
+          favoriteBreath: favoriteBreath || '—',
+          favoriteSound: favoriteSound || '—',
+          streak: calculateStreak(Object.keys(byDay))
+        };
+      }
+
+      function favorite(items) {
+        if (!items.length) return '';
+        const map = items.reduce((acc, item) => { acc[item] = (acc[item] || 0) + 1; return acc; }, {});
+        return Object.entries(map).sort((a, b) => b[1] - a[1])[0]?.[0] || '';
+      }
+
+      function calculateStreak(dateKeys) {
+        const set = new Set(dateKeys);
+        let streak = 0;
+        const d = new Date();
+        d.setHours(12, 0, 0, 0);
+        while (set.has(todayKey(d))) {
+          streak += 1;
+          d.setDate(d.getDate() - 1);
+        }
+        return streak;
+      }
+
+      function renderStats() {
+        const store = getStore();
+        const stats = calculateStats(store.sessions);
+        els.quickToday.textContent = humanMinutes(stats.todaySeconds);
+        els.quickSessions.textContent = stats.sessions;
+        els.quickStreak.textContent = stats.streak;
+        els.quickAvg.textContent = stats.avgFocus ? stats.avgFocus.toFixed(1) : '—';
+        const cards = [
+          ['Фокус сегодня', humanMinutes(stats.todaySeconds)],
+          ['Фокус за неделю', humanMinutes(stats.weekSeconds)],
+          ['Сессий всего', String(stats.sessions)],
+          ['Лучший день', stats.bestDay],
+          ['Средний фокус', stats.avgFocus ? `${stats.avgFocus.toFixed(1)}/10` : '—'],
+          ['Любимое дыхание', stats.favoriteBreath],
+          ['Любимый звук', stats.favoriteSound],
+          ['Streak дней', String(stats.streak)]
+        ];
+        els.statsGrid.innerHTML = cards.map(([label, value]) => `<div class="stat-card"><strong>${escapeHtml(value)}</strong><span>${escapeHtml(label)}</span></div>`).join('');
+      }
+
+      function resetStats() {
+        showModal('Сбросить статистику?', `<p>Это удалит сохранённые сессии из localStorage. Действие нельзя отменить.</p>`, () => {
+          saveStore({ sessions: [] });
+          closeModal();
+          renderStats();
+          showToast('Статистика сброшена');
+        }, 'Сбросить');
+      }
+
+      function cryptoRandomId() {
+        if (window.crypto && crypto.getRandomValues) {
+          const arr = new Uint32Array(2);
+          crypto.getRandomValues(arr);
+          return [...arr].map(x => x.toString(16)).join('');
+        }
+        return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>'"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[ch]));
+      }
+
+      function init() {
+        renderCards();
+        bindEvents();
+        updateVolumes();
+        renderStats();
+        selectPreset('pm');
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
