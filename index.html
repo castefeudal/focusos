@@ -282,6 +282,152 @@
       .today-item{padding:10px 5px;border-radius:16px}
       .today-item span{font-size:10px}
     }
+
+
+    /* V11: mobile practice cockpit — strict center, no overlaps */
+    .phase-center{
+      width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px;
+    }
+    .phase-text{width:100%;max-width:92%;margin:0 auto;text-align:center;text-wrap:balance;overflow-wrap:normal;hyphens:none;}
+    .phase-count{text-align:center;width:100%;}
+
+    body.in-practice{
+      overflow:hidden;
+      padding-bottom:0;
+      overscroll-behavior:none;
+      touch-action:manipulation;
+    }
+    body.in-practice::before{opacity:.55;}
+    body.in-practice .topbar{display:none;}
+    body.in-practice .app{
+      height:100dvh;
+      max-height:100dvh;
+      overflow:hidden;
+      padding:calc(10px + var(--safe-top)) 12px calc(102px + var(--safe-bottom));
+      width:100%;
+    }
+    body.in-practice #practiceScreen.active{height:100%;display:block;}
+    body.in-practice .practice-shell{
+      height:100%;
+      display:block;
+    }
+    body.in-practice .practice-card{
+      height:calc(100dvh - 118px - var(--safe-bottom) - var(--safe-top));
+      min-height:0;
+      max-height:none;
+      display:grid;
+      grid-template-rows:auto minmax(0,1fr) auto auto;
+      align-items:center;
+      justify-items:center;
+      justify-content:stretch;
+      align-content:stretch;
+      border-radius:30px;
+      padding:16px 14px 14px;
+      text-align:center;
+    }
+    body.in-practice .practice-top{
+      width:100%;
+      margin:0;
+      align-self:start;
+      padding:0 4px;
+    }
+    body.in-practice .practice-label{font-size:11px;margin-bottom:6px;}
+    body.in-practice .practice-title{font-size:clamp(25px, 7.4vw, 38px);line-height:.96;margin-bottom:7px;}
+    body.in-practice .practice-sub{font-size:13px;line-height:1.36;max-width:340px;}
+    body.in-practice .breath-wrap{
+      width:100%;
+      height:100%;
+      min-height:0;
+      margin:0;
+      display:grid;
+      place-items:center;
+      align-self:center;
+    }
+    body.in-practice .breath-ring{
+      width:min(78vw, 370px, 50dvh);
+      height:min(78vw, 370px, 50dvh);
+      min-width:238px;
+      min-height:238px;
+      max-width:370px;
+      max-height:370px;
+    }
+    body.in-practice .phase-text{
+      font-size:clamp(38px, 12.4vw, 66px);
+      line-height:.9;
+      letter-spacing:-.075em;
+    }
+    body.in-practice .phase-count{font-size:clamp(18px, 5vw, 24px);margin-top:12px;}
+    body.in-practice .timers{
+      width:100%;
+      max-width:390px;
+      margin:0 auto 8px;
+      grid-template-columns:1fr 1fr;
+    }
+    body.in-practice .timer-box{padding:10px;border-radius:18px;}
+    body.in-practice .timer-box b{font-size:clamp(23px, 7vw, 31px);}
+    body.in-practice .timer-box span{font-size:10px;margin-bottom:3px;}
+    body.in-practice .blind-hint{
+      width:100%;
+      max-width:370px;
+      font-size:12px;
+      line-height:1.38;
+      margin:0 auto;
+      color:#C9C4B8;
+    }
+    body.in-practice .practice-controls{
+      position:fixed;
+      left:12px;
+      right:12px;
+      bottom:calc(10px + var(--safe-bottom));
+      z-index:200;
+      max-width:680px;
+      margin:0 auto;
+      grid-template-columns:1fr;
+      gap:9px;
+      padding:9px;
+      border-radius:24px;
+      background:linear-gradient(180deg, rgba(17,19,24,.94), rgba(9,10,13,.92));
+      border:1px solid rgba(255,255,255,.14);
+      backdrop-filter:blur(22px);
+      box-shadow:0 28px 80px rgba(0,0,0,.62);
+    }
+    body.in-practice .practice-controls .btn{min-height:54px;border-radius:18px;font-size:15px;}
+    body.in-practice .control-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+    body.in-practice .desktop-only{display:none!important;}
+
+    /* Home comfort polish */
+    @media (max-width:759px){
+      .section{margin-top:18px;}
+      .section-title{align-items:flex-start;}
+      .section-title h2{font-size:20px;}
+      .section-title p{font-size:11px;line-height:1.25;}
+      .hero,.panel,.ritual,.done-card{box-shadow:0 18px 48px rgba(0,0,0,.34);}
+      .sound-head-row{display:grid;grid-template-columns:1fr;}
+      .sound-badge{justify-self:start;}
+      .sound-body{gap:13px;}
+      .quick-actions.section{position:sticky;bottom:calc(8px + var(--safe-bottom));z-index:30;padding:8px;border:1px solid rgba(255,255,255,.12);border-radius:24px;background:rgba(9,10,13,.82);backdrop-filter:blur(18px);box-shadow:0 18px 58px rgba(0,0,0,.44);}
+    }
+
+    @media (max-width:380px){
+      body.in-practice .app{padding-left:10px;padding-right:10px;}
+      body.in-practice .practice-card{height:calc(100dvh - 112px - var(--safe-bottom) - var(--safe-top));padding:14px 10px 12px;border-radius:26px;}
+      body.in-practice .breath-ring{width:min(82vw, 46dvh);height:min(82vw, 46dvh);min-width:214px;min-height:214px;}
+      body.in-practice .phase-text{font-size:clamp(34px, 12vw, 54px);}
+      body.in-practice .timers{gap:8px;}
+      body.in-practice .practice-controls{left:10px;right:10px;bottom:calc(8px + var(--safe-bottom));}
+      body.in-practice .practice-controls .btn{min-height:51px;}
+    }
+
+    @media (min-width:760px){
+      body.in-practice{overflow:auto;}
+      body.in-practice .topbar{display:flex;}
+      body.in-practice .app{height:auto;max-height:none;overflow:visible;padding:26px 26px 40px;}
+      body.in-practice .practice-shell{display:grid;height:auto;grid-template-columns:minmax(0,1fr) 320px;align-items:start;}
+      body.in-practice .practice-card{height:660px;min-height:660px;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;padding:30px 24px;}
+      body.in-practice .practice-controls{position:static;grid-column:1/-1;grid-template-columns:260px 1fr;max-width:760px;margin:0 auto;width:100%;}
+      body.in-practice .desktop-only{display:block!important;}
+    }
+
     @media (prefers-reduced-motion: reduce){
       *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
     }
@@ -420,7 +566,7 @@
           <div class="breath-wrap">
             <div class="breath-ring" id="breathRing">
               <div class="breath-orb">
-                <div>
+                <div class="phase-center">
                   <div class="phase-text" id="phaseText">Вдох</div>
                   <div class="phase-count" id="phaseCount">5</div>
                 </div>
@@ -665,7 +811,10 @@
     }
     function show(id){
       ['homeScreen','practiceScreen','doneScreen'].forEach(s=>$(s).classList.remove('active'));
-      $(id+'Screen').classList.add('active'); state.screen=id; window.scrollTo({top:0,behavior:'smooth'});
+      $(id+'Screen').classList.add('active');
+      state.screen=id;
+      document.body.classList.toggle('in-practice', id==='practice');
+      window.scrollTo({top:0,behavior:id==='practice'?'auto':'smooth'});
     }
     function setupPractice(){
       const r=rituals[state.selected];
