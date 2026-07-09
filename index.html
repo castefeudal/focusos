@@ -1,12 +1,10 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#090A0D" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>FOCUS OS · Markov Breath Lab</title>
+  <title>FOCUS OS / Markov Breath Lab</title>
   <style>
     :root{
       --bg:#090A0D;
@@ -14,542 +12,276 @@
       --panel:rgba(255,255,255,.065);
       --panel2:rgba(255,255,255,.095);
       --line:rgba(255,255,255,.12);
-      --line2:rgba(255,255,255,.20);
+      --line2:rgba(214,179,106,.28);
       --text:#F4F1EA;
-      --muted:#AAA9A5;
-      --muted2:#757982;
+      --muted:#A9A9A9;
+      --muted2:#777B84;
       --gold:#D6B36A;
       --gold2:#C9A24D;
-      --teal:#7EA6A1;
-      --red:#D98282;
-      --green:#9CCB9D;
-      --blue:#98B6E8;
-      --radius:24px;
-      --radius2:32px;
-      --shadow:0 28px 90px rgba(0,0,0,.42);
-      --ease:cubic-bezier(.2,.8,.2,1);
-      --safe-top:env(safe-area-inset-top, 0px);
+      --calm:#7EA6A1;
+      --danger:#D98282;
+      --ok:#9BCF9B;
+      --shadow:0 24px 80px rgba(0,0,0,.46);
+      --radius:26px;
       --safe-bottom:env(safe-area-inset-bottom, 0px);
+      --safe-top:env(safe-area-inset-top, 0px);
+      --max:1080px;
     }
-
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    html{height:100%;scroll-behavior:smooth}
+    *{box-sizing:border-box}
+    html{height:100%; background:var(--bg); -webkit-text-size-adjust:100%;}
     body{
       margin:0;
       min-height:100%;
-      overflow-x:hidden;
       color:var(--text);
-      font-family:Inter, Manrope, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
-        radial-gradient(circle at 18% -8%, rgba(214,179,106,.22), transparent 31%),
-        radial-gradient(circle at 92% 0%, rgba(126,166,161,.16), transparent 30%),
-        radial-gradient(circle at 40% 110%, rgba(214,179,106,.10), transparent 34%),
-        linear-gradient(145deg, #08090C 0%, #101219 48%, #07080B 100%);
-      touch-action:manipulation;
+        radial-gradient(circle at 18% 0%, rgba(214,179,106,.16), transparent 30%),
+        radial-gradient(circle at 82% 12%, rgba(126,166,161,.14), transparent 31%),
+        linear-gradient(180deg, #090A0D 0%, #0D0F14 42%, #090A0D 100%);
+      overflow-x:hidden;
+      padding-bottom:calc(22px + var(--safe-bottom));
     }
-
     body::before{
       content:"";
       position:fixed;
       inset:0;
-      z-index:-2;
       pointer-events:none;
       background:
-        linear-gradient(rgba(255,255,255,.020) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.016) 1px, transparent 1px);
-      background-size:64px 64px;
-      mask-image:linear-gradient(to bottom,#000,transparent 82%);
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+      background-size:42px 42px;
+      mask-image:linear-gradient(to bottom, rgba(0,0,0,.9), transparent 72%);
+      z-index:0;
     }
-
-    body::after{
-      content:"";
-      position:fixed;
-      inset:-120px;
-      z-index:-1;
-      pointer-events:none;
-      background:radial-gradient(circle, transparent 46%, rgba(0,0,0,.72));
-    }
-
-    button,input,textarea{font:inherit;color:inherit}
-    button{border:0;cursor:pointer;touch-action:manipulation}
-    button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid rgba(214,179,106,.72);outline-offset:3px}
-    input,textarea{font-size:16px}
-
+    button,input,textarea,select{font:inherit;color:inherit}
+    button{border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
     .app{
-      width:min(1160px,100%);
+      width:min(var(--max), 100%);
       margin:0 auto;
-      padding:calc(14px + var(--safe-top)) 14px calc(112px + var(--safe-bottom));
+      padding:calc(16px + var(--safe-top)) 18px 28px;
+      position:relative;
+      z-index:1;
     }
-
     .topbar{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:12px;
-      min-height:58px;
-      margin-bottom:14px;
-      padding:9px 10px 9px 12px;
-      border:1px solid rgba(255,255,255,.09);
-      border-radius:24px;
-      background:rgba(9,10,13,.70);
-      backdrop-filter:blur(22px);
-      box-shadow:0 18px 70px rgba(0,0,0,.30);
+      margin-bottom:18px;
     }
-
-    .brand{display:flex;align-items:center;gap:10px;min-width:0}
-    .brand-mark{
-      flex:0 0 auto;
-      width:38px;height:38px;border-radius:50%;
-      border:1px solid rgba(255,255,255,.18);
-      background:
-        radial-gradient(circle at 34% 24%, rgba(255,255,255,.95), transparent 12%),
-        radial-gradient(circle at 50% 54%, rgba(214,179,106,1), rgba(126,166,161,.36) 58%, rgba(255,255,255,.06));
-      box-shadow:0 0 34px rgba(214,179,106,.24);
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .mark{
+      width:42px;height:42px;border-radius:16px;
+      background:linear-gradient(145deg, rgba(214,179,106,.95), rgba(126,166,161,.55));
+      box-shadow:0 12px 38px rgba(214,179,106,.16);
+      position:relative;flex:0 0 auto;
     }
-    .brand strong{display:block;font-size:12px;line-height:1.05;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
-    .brand span{display:block;margin-top:3px;color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px}
+    .mark::after{content:"";position:absolute;inset:12px;border:1px solid rgba(9,10,13,.55);border-radius:50%}
+    .brand-title{font-weight:800;letter-spacing:.04em;text-transform:uppercase;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .brand-sub{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .status-pill{
+      display:inline-flex;align-items:center;gap:8px;
+      min-height:38px;padding:0 12px;border:1px solid var(--line);
+      background:rgba(255,255,255,.05);border-radius:999px;color:var(--muted);font-size:12px;white-space:nowrap;
+    }
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 18px rgba(214,179,106,.55)}
+    .screen{display:none;animation:rise .32s ease both}
+    .screen.active{display:block}
+    @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-    .header-chip{
-      flex:0 0 auto;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-height:38px;
-      padding:8px 11px;
-      border-radius:999px;
+    .hero{
       border:1px solid var(--line);
-      background:rgba(255,255,255,.055);
-      color:var(--muted);
-      font-size:11px;
-      white-space:nowrap;
-    }
-    .header-chip b{color:var(--text)}
-
-    .screen{display:none;min-width:0}
-    .screen.active{display:block;animation:screenIn .28s var(--ease) both}
-    @keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-
-    .mobile-stack{display:grid;gap:14px;min-width:0}
-    .card{
-      position:relative;
-      min-width:0;
-      border:1px solid var(--line);
-      border-radius:var(--radius2);
-      background:linear-gradient(145deg, rgba(255,255,255,.082), rgba(255,255,255,.038));
+      background:linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.045));
+      border-radius:32px;
       box-shadow:var(--shadow);
+      padding:22px;
       overflow:hidden;
-      backdrop-filter:blur(22px);
-    }
-    .card::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      background:radial-gradient(circle at 14% 0%, rgba(214,179,106,.12), transparent 36%);
-    }
-    .card-inner{position:relative;padding:18px}
-
-    .hero-card .card-inner{padding:22px 18px 18px}
-    .eyebrow{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      width:max-content;
-      max-width:100%;
-      margin:0 0 12px;
-      padding:8px 11px;
-      border-radius:999px;
-      border:1px solid rgba(214,179,106,.24);
-      background:rgba(214,179,106,.085);
-      color:#F2D79D;
-      font-size:10px;
-      letter-spacing:.10em;
-      text-transform:uppercase;
-    }
-    .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 18px rgba(214,179,106,.75)}
-
-    h1,h2,h3,p{margin:0}
-    h1{
-      max-width:720px;
-      font-size:clamp(31px,9vw,70px);
-      line-height:.94;
-      letter-spacing:-.062em;
-      margin:0 0 12px;
-    }
-    h1 span{color:var(--gold)}
-    .lead{
-      color:var(--muted);
-      font-size:15px;
-      line-height:1.55;
-      max-width:680px;
-    }
-    .mobile-subline{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:8px;
-      margin-top:16px;
-    }
-    .mini-metric{
-      min-height:72px;
-      padding:13px;
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:20px;
-      background:rgba(255,255,255,.045);
-    }
-    .mini-metric b{display:block;font-size:18px;line-height:1.1;color:var(--text)}
-    .mini-metric span{display:block;margin-top:6px;color:var(--muted);font-size:12px;line-height:1.25}
-
-    .section-title{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:12px;
-    }
-    .section-title h2{font-size:21px;letter-spacing:-.035em;line-height:1.08}
-    .section-title p{color:var(--muted);font-size:12px;line-height:1.35;max-width:280px;text-align:right}
-
-    .selected-ritual{
-      display:grid;
-      gap:14px;
-      border:1px solid rgba(214,179,106,.24);
-      background:
-        radial-gradient(circle at 14% 0%, rgba(214,179,106,.20), transparent 37%),
-        linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,.045));
-    }
-    .selected-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
-    .ritual-kicker{font-size:11px;color:#F2D79D;letter-spacing:.10em;text-transform:uppercase;margin-bottom:8px}
-    .selected-title{font-size:27px;line-height:1;letter-spacing:-.045em;margin-bottom:8px}
-    .selected-desc{font-size:14px;line-height:1.45;color:var(--muted)}
-    .time-badge{
-      flex:0 0 auto;
-      min-width:68px;
-      min-height:58px;
-      display:grid;
-      place-items:center;
-      padding:10px;
-      border-radius:20px;
-      border:1px solid rgba(214,179,106,.28);
-      background:rgba(214,179,106,.10);
-      color:var(--gold);
-      font-weight:800;
-      font-size:18px;
-    }
-    .ritual-specs{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:8px;
-    }
-    .spec{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      min-height:44px;
-      padding:10px 12px;
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:16px;
-      background:rgba(0,0,0,.14);
-      color:var(--muted);
-      font-size:12px;
-    }
-    .spec b{color:var(--text);font-size:12px;text-align:right}
-
-    .routine-list{display:grid;gap:10px}
-    .routine-card{
-      width:100%;
-      display:block;
-      text-align:left;
-      padding:15px;
-      min-height:118px;
-      border-radius:24px;
-      border:1px solid rgba(255,255,255,.11);
-      background:rgba(255,255,255,.045);
-      transition:transform .22s var(--ease), border-color .22s var(--ease), background .22s var(--ease), box-shadow .22s var(--ease);
-    }
-    .routine-card:active{transform:scale(.985)}
-    .routine-card.active{
-      border-color:rgba(214,179,106,.42);
-      background:linear-gradient(145deg, rgba(214,179,106,.13), rgba(255,255,255,.052));
-      box-shadow:0 18px 48px rgba(214,179,106,.08);
-    }
-    .routine-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:9px}
-    .routine-head strong{font-size:17px;line-height:1.08;letter-spacing:-.025em}
-    .routine-tag{flex:0 0 auto;padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.10);color:var(--muted);font-size:11px}
-    .routine-card p{color:var(--muted);font-size:13px;line-height:1.38;margin-bottom:10px}
-    .routine-foot{display:flex;flex-wrap:wrap;gap:7px;color:var(--muted2);font-size:11px}
-    .tiny-pill{padding:6px 8px;border:1px solid rgba(255,255,255,.09);border-radius:999px;background:rgba(0,0,0,.12)}
-
-    .inputs{display:grid;gap:10px}
-    .input-wrap{display:grid;gap:7px}
-    .input-wrap label{font-size:12px;color:var(--muted);padding-left:2px}
-    .input-wrap input,.input-wrap textarea{
-      width:100%;
-      min-height:52px;
-      padding:14px 15px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.20);
-      color:var(--text);
-      outline:none;
-      resize:vertical;
-    }
-    .input-wrap textarea{min-height:88px;line-height:1.35}
-    .input-wrap input::placeholder,.input-wrap textarea::placeholder{color:rgba(170,169,165,.52)}
-
-    .progress-row{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:8px;
-    }
-    .progress-chip{
-      min-height:84px;
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:22px;
-      background:rgba(255,255,255,.045);
-      display:grid;
-      place-items:center;
-      text-align:center;
-      padding:10px;
-    }
-    .progress-chip .icon{
-      width:29px;height:29px;border-radius:50%;
-      display:grid;place-items:center;margin-bottom:7px;
-      background:rgba(255,255,255,.065);
-      color:var(--muted);
-      font-size:13px;
-    }
-    .progress-chip.done{border-color:rgba(156,203,157,.32);background:rgba(156,203,157,.075)}
-    .progress-chip.done .icon{background:rgba(156,203,157,.17);color:var(--green)}
-    .progress-chip b{font-size:12px;line-height:1.1}
-    .progress-chip span{display:block;margin-top:3px;color:var(--muted2);font-size:10px}
-
-    .safe-note{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.45;
-      border-radius:22px;
-      border:1px solid rgba(255,255,255,.09);
-      background:rgba(255,255,255,.035);
-      padding:14px;
-    }
-    .safe-note b{color:var(--text)}
-
-    .practice-stage{
-      min-height:calc(100svh - 104px - var(--safe-top));
-      display:grid;
-      grid-template-rows:auto 1fr auto;
-      gap:14px;
-    }
-    .practice-header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .back-btn,.ghost-btn,.small-btn{
-      min-height:44px;
-      padding:10px 13px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.055);
-      color:var(--muted);
-      font-size:13px;
-    }
-    .back-btn:active,.ghost-btn:active,.small-btn:active{transform:scale(.98)}
-    .practice-name{min-width:0;text-align:right}
-    .practice-name b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .practice-name span{display:block;margin-top:3px;color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-    .breath-card{
-      display:grid;
-      place-items:center;
-      padding:18px;
-      min-height:470px;
-      overflow:visible;
-    }
-    .breath-shell{
-      width:min(78vw,360px);
-      aspect-ratio:1/1;
       position:relative;
-      display:grid;
-      place-items:center;
-      margin:8px auto 12px;
-      border-radius:50%;
-      background:
-        radial-gradient(circle, rgba(214,179,106,.10) 0 34%, transparent 35%),
-        conic-gradient(from -90deg, rgba(214,179,106,.95) calc(var(--progress,0) * 1%), rgba(255,255,255,.10) 0);
-      filter:drop-shadow(0 0 42px rgba(214,179,106,.12));
     }
-    .breath-shell::before{
-      content:"";
-      position:absolute;
-      inset:14px;
-      border-radius:50%;
-      background:rgba(9,10,13,.96);
-      border:1px solid rgba(255,255,255,.10);
+    .hero::before{
+      content:"";position:absolute;inset:-80px -80px auto auto;width:210px;height:210px;border-radius:50%;
+      background:radial-gradient(circle, rgba(214,179,106,.22), transparent 70%);
+    }
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 11px;border-radius:999px;border:1px solid rgba(214,179,106,.28);
+      background:rgba(214,179,106,.08);color:#E8D5A7;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    }
+    h1{font-size:clamp(34px, 9.5vw, 68px);line-height:.92;margin:18px 0 12px;letter-spacing:-.07em;max-width:760px}
+    .lead{font-size:clamp(16px, 4.2vw, 21px);line-height:1.48;color:var(--muted);max-width:720px;margin:0 0 20px}
+    .quick-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:18px}
+    .btn{
+      min-height:54px;border-radius:18px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;gap:10px;
+      font-weight:800;letter-spacing:-.02em;transition:transform .18s ease, border-color .18s ease, background .18s ease, opacity .18s ease;
+      user-select:none;text-align:center;
+    }
+    .btn:active{transform:scale(.985)}
+    .btn.primary{background:linear-gradient(135deg, var(--gold), var(--gold2));color:#15110A;box-shadow:0 16px 42px rgba(214,179,106,.23)}
+    .btn.secondary{background:rgba(255,255,255,.075);border:1px solid var(--line);color:var(--text)}
+    .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--muted)}
+    .btn.danger{background:rgba(217,130,130,.11);border:1px solid rgba(217,130,130,.28);color:#F0B8B8}
+    .btn.small{min-height:44px;border-radius:15px;padding:0 14px;font-size:14px}
+    .btn:disabled{opacity:.46;cursor:not-allowed}
+
+    .today{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 0;
+    }
+    .today-item{
+      border:1px solid var(--line);background:rgba(0,0,0,.18);border-radius:18px;padding:12px 8px;text-align:center;min-width:0;
+    }
+    .today-item b{display:block;font-size:18px;margin-bottom:2px;color:var(--gold)}
+    .today-item span{display:block;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .today-item.done{border-color:rgba(155,207,155,.35);background:rgba(155,207,155,.08)}
+    .today-item.done b{color:var(--ok)}
+
+    .section{margin-top:16px}
+    .section-title{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:0 2px 10px}
+    .section-title h2{font-size:19px;letter-spacing:-.035em;margin:0}
+    .section-title p{margin:0;color:var(--muted);font-size:12px;text-align:right}
+    .rituals{display:grid;grid-template-columns:1fr;gap:12px}
+    .ritual{
+      border:1px solid var(--line);background:rgba(255,255,255,.055);border-radius:26px;padding:16px;box-shadow:0 18px 54px rgba(0,0,0,.22);
+      transition:transform .18s ease,border-color .18s ease,background .18s ease;
+      position:relative;overflow:hidden;
+    }
+    .ritual::after{content:"";position:absolute;inset:auto -40px -70px auto;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle, rgba(214,179,106,.11), transparent 72%);pointer-events:none}
+    .ritual.active{border-color:rgba(214,179,106,.62);background:linear-gradient(180deg, rgba(214,179,106,.12), rgba(255,255,255,.055));box-shadow:0 20px 70px rgba(214,179,106,.12)}
+    .ritual-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .ritual-kicker{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--calm);font-weight:800;margin-bottom:8px}
+    .ritual h3{font-size:22px;margin:0 0 6px;letter-spacing:-.045em}
+    .ritual p{margin:0;color:var(--muted);line-height:1.44;font-size:14px;max-width:58ch}
+    .ritual-time{flex:0 0 auto;text-align:right;color:var(--gold);font-weight:900;font-size:18px;line-height:1}
+    .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+    .chip{font-size:12px;color:#D8D3C8;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.095);border-radius:999px;padding:8px 10px;white-space:nowrap}
+
+    .panel{
+      border:1px solid var(--line);background:rgba(255,255,255,.052);border-radius:26px;padding:16px;box-shadow:0 18px 54px rgba(0,0,0,.20);
+    }
+
+    select{
+      width:100%;min-height:50px;border-radius:17px;border:1px solid var(--line);background:rgba(0,0,0,.24);color:var(--text);padding:0 14px;outline:none;
+      appearance:none;background-image:linear-gradient(45deg, transparent 50%, var(--gold) 50%),linear-gradient(135deg, var(--gold) 50%, transparent 50%);
+      background-position:calc(100% - 19px) 21px, calc(100% - 13px) 21px;background-size:6px 6px,6px 6px;background-repeat:no-repeat;
+    }
+    select:focus{border-color:rgba(214,179,106,.48);box-shadow:0 0 0 4px rgba(214,179,106,.08)}
+    .sound-panel{padding:0;overflow:hidden}
+    .sound-head{padding:16px;border-bottom:1px solid rgba(255,255,255,.09);background:linear-gradient(180deg, rgba(214,179,106,.085), rgba(255,255,255,.025))}
+    .sound-head-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .sound-head h3{font-size:21px;line-height:1;margin:0 0 8px;letter-spacing:-.045em}
+    .sound-head p{font-size:13px;color:var(--muted);line-height:1.45;margin:0;max-width:660px}
+    .sound-badge{flex:0 0 auto;border:1px solid rgba(214,179,106,.3);background:rgba(214,179,106,.08);color:#E8D5A7;border-radius:999px;padding:8px 10px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+    .sound-body{padding:16px;display:grid;grid-template-columns:1fr;gap:12px}
+    .sound-now{border:1px solid rgba(214,179,106,.23);background:rgba(214,179,106,.075);border-radius:22px;padding:14px;display:grid;gap:8px}
+    .sound-now b{font-size:17px;letter-spacing:-.025em}
+    .sound-now span{font-size:13px;color:var(--muted);line-height:1.45}
+    .mini-grid{display:grid;grid-template-columns:1fr;gap:10px}
+    .segmented{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .seg-btn{min-height:46px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.055);font-weight:850;font-size:13px;color:var(--muted)}
+    .seg-btn.active{border-color:rgba(214,179,106,.55);background:rgba(214,179,106,.12);color:var(--text)}
+    .headphone-note{display:flex;gap:10px;align-items:flex-start;border:1px solid rgba(126,166,161,.22);background:rgba(126,166,161,.07);border-radius:18px;padding:12px;color:#C9DDDA;font-size:12px;line-height:1.45}
+    .headphone-note strong{color:#E8F2F0}
+    .settings-grid{display:grid;grid-template-columns:1fr;gap:10px}
+    .field{display:grid;gap:8px}
+    .field label{font-size:12px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+    .range-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+    input[type="range"]{width:100%;accent-color:var(--gold)}
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);background:rgba(0,0,0,.15);border-radius:18px;padding:12px}
+    .switch{width:52px;height:30px;border-radius:999px;background:rgba(255,255,255,.14);position:relative;flex:0 0 auto;transition:.18s ease}
+    .switch::after{content:"";position:absolute;width:24px;height:24px;border-radius:50%;left:3px;top:3px;background:rgba(255,255,255,.78);transition:.18s ease}
+    .switch.on{background:rgba(214,179,106,.5)}
+    .switch.on::after{transform:translateX(22px);background:#fff1cb}
+    .small-note{font-size:12px;line-height:1.45;color:var(--muted);margin:10px 0 0}
+
+    .practice-shell{display:grid;gap:14px}
+    .practice-card{
+      min-height:calc(100dvh - 146px - var(--safe-top));
+      display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+      border:1px solid rgba(214,179,106,.18);
+      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.035));
+      border-radius:34px;padding:22px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+    }
+    .practice-card::before{content:"";position:absolute;inset:-180px -80px auto auto;width:330px;height:330px;border-radius:50%;background:radial-gradient(circle, rgba(126,166,161,.16), transparent 68%);pointer-events:none}
+    .practice-card::after{content:"";position:absolute;inset:auto auto -160px -120px;width:310px;height:310px;border-radius:50%;background:radial-gradient(circle, rgba(214,179,106,.13), transparent 70%);pointer-events:none}
+    .practice-top{position:relative;z-index:1;margin-bottom:18px;width:100%}
+    .practice-label{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);font-weight:900;margin-bottom:8px}
+    .practice-title{font-size:clamp(26px, 8vw, 42px);letter-spacing:-.06em;font-weight:900;line-height:1;margin-bottom:8px}
+    .practice-sub{font-size:14px;color:var(--muted);line-height:1.45;max-width:560px;margin:0 auto}
+    .breath-wrap{position:relative;z-index:1;display:grid;place-items:center;margin:4px 0 20px;width:100%}
+    .breath-ring{
+      width:min(68vw, 320px);height:min(68vw, 320px);max-width:320px;max-height:320px;min-width:232px;min-height:232px;
+      border-radius:50%;display:grid;place-items:center;padding:10px;
+      background:conic-gradient(var(--gold) var(--progress,0deg), rgba(255,255,255,.08) 0deg);
+      box-shadow:0 0 72px rgba(214,179,106,.12), inset 0 0 0 1px rgba(255,255,255,.08);
+      transition:background .2s linear;
     }
     .breath-orb{
-      position:relative;
-      width:58%;
-      aspect-ratio:1/1;
-      border-radius:50%;
-      transform:scale(var(--orb-scale,1));
-      transition:transform .18s linear, box-shadow .35s var(--ease), background .35s var(--ease);
+      width:100%;height:100%;border-radius:50%;display:grid;place-items:center;
       background:
-        radial-gradient(circle at 35% 28%, rgba(255,255,255,.86), transparent 12%),
-        radial-gradient(circle at 50% 54%, rgba(214,179,106,.95), rgba(126,166,161,.28) 59%, rgba(255,255,255,.05));
-      box-shadow:0 0 74px rgba(214,179,106,.24), inset 0 0 46px rgba(255,255,255,.08);
+        radial-gradient(circle at 38% 30%, rgba(255,255,255,.20), transparent 26%),
+        radial-gradient(circle, rgba(214,179,106,.28), rgba(126,166,161,.12) 48%, rgba(0,0,0,.18) 73%);
+      border:1px solid rgba(255,255,255,.13);
+      box-shadow:inset 0 0 44px rgba(255,255,255,.055), 0 24px 78px rgba(0,0,0,.34);
+      transform:scale(var(--orb-scale, .82));
+      transition:transform .9s cubic-bezier(.22,1,.36,1), filter .55s ease;
     }
-    .breath-orb.exhale{background:radial-gradient(circle at 40% 28%, rgba(255,255,255,.66), transparent 12%), radial-gradient(circle at 50% 54%, rgba(126,166,161,.88), rgba(214,179,106,.18) 61%, rgba(255,255,255,.05));box-shadow:0 0 74px rgba(126,166,161,.20), inset 0 0 46px rgba(255,255,255,.07)}
-    .breath-center{
-      position:absolute;
-      inset:0;
-      display:grid;
-      place-items:center;
-      text-align:center;
-      pointer-events:none;
+    .phase-inhale .breath-orb{--orb-scale:1;filter:brightness(1.08)}
+    .phase-exhale .breath-orb{--orb-scale:.76;filter:brightness(.92)}
+    .phase-hold .breath-orb{--orb-scale:.94;filter:brightness(1.03)}
+    .phase-pause .breath-orb{--orb-scale:.72;filter:brightness(.88)}
+    .phase-sip .breath-orb{--orb-scale:1.05;filter:brightness(1.12)}
+    .phase-text{font-size:clamp(36px, 11vw, 64px);font-weight:950;letter-spacing:-.07em;line-height:.9;text-shadow:0 12px 34px rgba(0,0,0,.38)}
+    .phase-count{font-variant-numeric:tabular-nums;font-size:17px;color:#EBD7A2;margin-top:10px;font-weight:850}
+    .timers{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:420px;margin:0 auto 12px}
+    .timer-box{border:1px solid var(--line);background:rgba(0,0,0,.16);border-radius:20px;padding:12px}
+    .timer-box span{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:800;margin-bottom:4px}
+    .timer-box b{font-variant-numeric:tabular-nums;font-size:28px;letter-spacing:-.04em}
+    .blind-hint{position:relative;z-index:1;color:var(--muted);font-size:13px;line-height:1.45;max-width:520px;margin:0 auto}
+    .practice-controls{
+      position:sticky;bottom:calc(10px + var(--safe-bottom));z-index:20;display:grid;grid-template-columns:1.15fr .85fr;gap:10px;margin-top:12px;
+      padding:10px;border:1px solid rgba(255,255,255,.12);border-radius:24px;background:rgba(9,10,13,.82);backdrop-filter:blur(18px);box-shadow:0 24px 70px rgba(0,0,0,.45);
     }
-    .phase-label{
-      font-size:clamp(34px,11vw,56px);
-      line-height:.92;
-      letter-spacing:-.055em;
-      font-weight:850;
-      text-shadow:0 12px 40px rgba(0,0,0,.48);
-    }
-    .phase-count{
-      margin-top:9px;
-      color:var(--muted);
-      font-size:clamp(24px,8vw,42px);
-      font-variant-numeric:tabular-nums;
-      font-weight:800;
-    }
-    .timer-line{
-      display:flex;
-      justify-content:center;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:6px;
-      color:var(--muted);
-      font-size:13px;
-    }
-    .timer-line b{color:var(--text);font-variant-numeric:tabular-nums}
+    .practice-controls .btn{min-height:56px;border-radius:18px}
+    .control-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-    .audio-panel{display:grid;gap:12px}
-    .audio-grid{display:grid;gap:10px}
-    .setting-row{
-      display:grid;
-      grid-template-columns:minmax(0,1fr) 130px;
-      gap:12px;
-      align-items:center;
-      min-height:54px;
-      padding:11px 12px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.16);
-    }
-    .setting-row span{font-size:13px;color:var(--muted)}
-    .setting-row b{display:block;color:var(--text);font-size:13px;margin-bottom:2px}
-    input[type="range"]{width:100%;accent-color:var(--gold)}
-    .toggle-row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      min-height:52px;
-      padding:11px 12px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.16);
-    }
-    .toggle-row span{font-size:13px;color:var(--muted);line-height:1.3}
-    .switch{position:relative;width:50px;height:30px;flex:0 0 auto}
-    .switch input{opacity:0;width:0;height:0}
-    .slider{position:absolute;cursor:pointer;inset:0;border-radius:999px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.12);transition:.22s var(--ease)}
-    .slider::before{content:"";position:absolute;width:22px;height:22px;left:4px;top:3px;border-radius:50%;background:rgba(244,241,234,.72);transition:.22s var(--ease)}
-    .switch input:checked + .slider{background:rgba(214,179,106,.24);border-color:rgba(214,179,106,.42)}
-    .switch input:checked + .slider::before{transform:translateX(19px);background:var(--gold)}
+    .done-card{border:1px solid var(--line2);background:linear-gradient(180deg, rgba(214,179,106,.12), rgba(255,255,255,.045));border-radius:34px;padding:24px;box-shadow:var(--shadow);text-align:center}
+    .done-card h2{font-size:clamp(34px, 10vw, 58px);letter-spacing:-.07em;line-height:.95;margin:10px 0}
+    .done-card p{color:var(--muted);line-height:1.55;margin:0 auto 18px;max-width:620px}
+    .report{border:1px solid var(--line);border-radius:24px;background:rgba(0,0,0,.18);padding:16px;text-align:left;white-space:pre-wrap;font-size:14px;line-height:1.55;color:#E9E2D4;margin-top:14px}
+    .done-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px}
 
-    .bottom-actions{
-      position:fixed;
-      left:0;right:0;bottom:0;
-      z-index:20;
-      padding:12px 14px calc(12px + var(--safe-bottom));
-      border-top:1px solid rgba(255,255,255,.10);
-      background:linear-gradient(to top, rgba(9,10,13,.98), rgba(9,10,13,.86));
-      backdrop-filter:blur(22px);
-      box-shadow:0 -18px 60px rgba(0,0,0,.42);
-    }
-    .bottom-inner{
-      width:min(1160px,100%);
-      margin:0 auto;
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-    }
-    .bottom-inner.single{grid-template-columns:1fr}
-    .primary-btn,.secondary-btn,.danger-btn{
-      min-height:56px;
-      width:100%;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:9px;
-      padding:14px 16px;
-      border-radius:20px;
-      font-weight:820;
-      letter-spacing:-.015em;
-      transition:transform .18s var(--ease), filter .18s var(--ease), background .18s var(--ease);
-    }
-    .primary-btn{
-      color:#15120A;
-      background:linear-gradient(135deg,#E7C77A,#C9A24D);
-      box-shadow:0 18px 42px rgba(214,179,106,.25);
-    }
-    .secondary-btn{color:var(--text);background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.13)}
-    .danger-btn{color:#FFD3D3;background:rgba(217,130,130,.12);border:1px solid rgba(217,130,130,.22)}
-    .primary-btn:active,.secondary-btn:active,.danger-btn:active{transform:scale(.985)}
-    .primary-btn:disabled,.secondary-btn:disabled{opacity:.55;filter:grayscale(.3);cursor:not-allowed}
-
-    .done-card{text-align:center;padding:28px 18px}
-    .done-icon{width:82px;height:82px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center;background:rgba(156,203,157,.12);border:1px solid rgba(156,203,157,.24);color:var(--green);font-size:34px;box-shadow:0 0 60px rgba(156,203,157,.16)}
-    .done-card h2{font-size:36px;line-height:.95;letter-spacing:-.055em;margin-bottom:10px}
-    .done-card p{color:var(--muted);font-size:14px;line-height:1.45;max-width:520px;margin:0 auto}
-    .summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
-    .summary-item{padding:14px;border:1px solid rgba(255,255,255,.10);border-radius:20px;background:rgba(255,255,255,.045);text-align:left}
-    .summary-item span{display:block;color:var(--muted);font-size:11px;margin-bottom:6px}
-    .summary-item b{font-size:19px;line-height:1.1}
-
+    .safety{font-size:12px;color:var(--muted2);line-height:1.55;border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:14px;background:rgba(0,0,0,.13);margin-top:16px}
     .desktop-only{display:none}
 
-    @media (min-width: 760px){
-      .app{padding:24px 24px 130px}
-      .topbar{border-radius:999px;padding:12px 14px 12px 16px;margin-bottom:20px}
-      .brand-mark{width:42px;height:42px}.brand strong{font-size:13px}.brand span{font-size:12px;max-width:none}.header-chip{font-size:12px;min-height:40px;padding:9px 13px}
+    @media (min-width:760px){
+      .app{padding:26px 26px 40px}
+      .quick-actions{grid-template-columns:1fr 1fr;max-width:560px}
+      .rituals{grid-template-columns:repeat(3,1fr)}
+      .ritual{min-height:254px;display:flex;flex-direction:column;justify-content:space-between}
+      .settings-grid{grid-template-columns:1fr 1fr 1fr}
+      .sound-body{grid-template-columns:1.05fr .95fr}
+      .mini-grid{grid-template-columns:1fr 1fr}
+      .sound-now{grid-column:1/-1}
+      .practice-shell{grid-template-columns:minmax(0,1fr) 320px;align-items:start}
+      .practice-card{min-height:660px;padding:30px 24px}
+      .practice-controls{position:static;grid-column:1/-1;grid-template-columns:260px 1fr;max-width:760px;margin:0 auto;width:100%}
+      .desktop-side{display:block}
       .desktop-only{display:block}
-      .home-grid{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(330px,.98fr);gap:16px;align-items:start}
-      .hero-card{min-height:100%}.hero-card .card-inner{padding:32px}
-      .card-inner{padding:24px}
-      .mobile-subline{grid-template-columns:repeat(4,1fr)}
-      .ritual-specs{grid-template-columns:1fr 1fr}
-      .routine-list{grid-template-columns:1fr;gap:12px}
-      .practice-stage{min-height:calc(100svh - 122px);grid-template-rows:auto 1fr}
-      .practice-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:16px;align-items:start}
-      .breath-card{min-height:610px}.breath-shell{width:min(40vw,390px)}
-      .bottom-inner{grid-template-columns:1fr 1fr 1fr}.bottom-inner.single{grid-template-columns:1fr 1fr}
+      .done-actions{grid-template-columns:1fr 1fr;max-width:560px;margin-left:auto;margin-right:auto}
     }
-
-    @media (max-width: 390px){
-      .app{padding-left:10px;padding-right:10px}
-      .topbar{border-radius:22px}.header-chip{display:none}
-      h1{font-size:30px}
-      .selected-title{font-size:24px}
-      .routine-head strong{font-size:16px}
-      .progress-row{gap:6px}.progress-chip{min-height:78px;padding:8px}
-      .setting-row{grid-template-columns:1fr;gap:8px}
-      .bottom-inner{gap:8px}.primary-btn,.secondary-btn,.danger-btn{min-height:54px;padding:13px 12px;border-radius:18px;font-size:14px}
+    @media (max-width:420px){
+      .app{padding-left:12px;padding-right:12px}
+      .hero{padding:18px;border-radius:28px}
+      .ritual{padding:14px;border-radius:23px}
+      .ritual h3{font-size:20px}
+      .chip{font-size:11px;padding:7px 9px}
+      .practice-card{border-radius:28px;padding:18px 12px;min-height:calc(100dvh - 126px - var(--safe-top))}
+      .breath-ring{width:72vw;height:72vw;min-width:220px;min-height:220px}
+      .practice-controls{grid-template-columns:1fr;bottom:calc(8px + var(--safe-bottom));border-radius:22px}
+      .control-row{grid-template-columns:1fr 1fr}
+      .timer-box b{font-size:24px}
+      .today-item{padding:10px 5px;border-radius:16px}
+      .today-item span{font-size:10px}
     }
-
     @media (prefers-reduced-motion: reduce){
       *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
     }
@@ -558,621 +290,470 @@
 <body>
   <main class="app">
     <header class="topbar">
-      <div class="brand" aria-label="FOCUS OS">
-        <div class="brand-mark"></div>
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
         <div>
-          <strong>FOCUS OS</strong>
-          <span>Markov Breath Lab · mobile</span>
+          <div class="brand-title">MARKOV BREATH LAB</div>
+          <div class="brand-sub">3 практики дня · mobile first</div>
         </div>
       </div>
-      <div class="header-chip"><b id="todayDoneTop">0/3</b>&nbsp;сегодня</div>
+      <div class="status-pill"><span class="dot"></span><span id="timeLabel">сейчас</span></div>
     </header>
 
     <section id="homeScreen" class="screen active">
-      <div class="home-grid mobile-stack">
-        <article class="card hero-card">
-          <div class="card-inner">
-            <div class="eyebrow"><i class="dot"></i> три точки дня</div>
-            <h1>Дыхание, которое <span>собирает</span> день.</h1>
-            <p class="lead">Утро — включиться. Перед PM — войти в ясность. Ночь — снизить обороты. Три короткие практики, фазовые сигналы и подходящий звуковой слой.</p>
-            <div class="mobile-subline" aria-label="Краткие преимущества">
-              <div class="mini-metric"><b>3–5 мин</b><span>без перегруза</span></div>
-              <div class="mini-metric"><b>Blind</b><span>можно с закрытыми глазами</span></div>
-              <div class="mini-metric"><b>Audio</b><span>binaural + noise</span></div>
-              <div class="mini-metric"><b>3/3</b><span>дневной ритуал</span></div>
-            </div>
-          </div>
-        </article>
-
-        <aside class="mobile-stack">
-          <article class="card selected-ritual">
-            <div class="card-inner">
-              <div class="selected-top">
-                <div>
-                  <div class="ritual-kicker" id="selectedMoment">рекомендовано сейчас</div>
-                  <h2 class="selected-title" id="selectedTitle">Clean Start</h2>
-                  <p class="selected-desc" id="selectedDesc">Мягкий запуск после пробуждения. Без разгона, без давления.</p>
-                </div>
-                <div class="time-badge" id="selectedDuration">3м</div>
-              </div>
-              <div class="ritual-specs" id="selectedSpecs"></div>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="card-inner">
-              <div class="section-title">
-                <h2>Прогресс</h2>
-                <p>Цель — закрыть 3 короткие точки дня.</p>
-              </div>
-              <div class="progress-row">
-                <div class="progress-chip" id="chip-morning"><div class="icon">☀</div><b>Утро</b><span>после подъёма</span></div>
-                <div class="progress-chip" id="chip-pm"><div class="icon">◆</div><b>PM</b><span>перед работой</span></div>
-                <div class="progress-chip" id="chip-night"><div class="icon">☾</div><b>Ночь</b><span>перед сном</span></div>
-              </div>
-            </div>
-          </article>
-        </aside>
+      <div class="hero">
+        <div class="eyebrow">FOCUS OS · PERSONAL RITUAL</div>
+        <h1>Три точки дыхания. Один собранный день.</h1>
+        <p class="lead">Утро — включиться. Перед PM — собрать внимание. Ночь — снизить обороты. Коротко, красиво, без перегруза.</p>
+        <div class="quick-actions">
+          <button class="btn primary" id="autoBtn">Подобрать сейчас</button>
+          <button class="btn secondary" id="testBtn">Проверить сигналы</button>
+        </div>
+        <div class="today" id="todayGrid"></div>
       </div>
 
-      <div class="mobile-stack" style="margin-top:14px">
-        <article class="card">
-          <div class="card-inner">
-            <div class="section-title">
-              <h2>Выбери ритуал</h2>
-              <p>Один экран. Один выбор. Один запуск.</p>
-            </div>
-            <div class="routine-list" id="routineList"></div>
-          </div>
-        </article>
+      <section class="section">
+        <div class="section-title">
+          <h2>Выбранный ритуал</h2>
+          <p id="selectedWhy">под текущее время</p>
+        </div>
+        <div class="ritual active" id="selectedCard"></div>
+      </section>
 
-        <article class="card">
-          <div class="card-inner">
-            <div class="section-title">
-              <h2>Намерение</h2>
-              <p>Коротко. Чтобы мозг понял задачу.</p>
-            </div>
-            <div class="inputs">
-              <div class="input-wrap">
-                <label for="intentInput">Что я сейчас делаю?</label>
-                <input id="intentInput" autocomplete="off" placeholder="Например: PM, обучение, спокойное завершение дня" />
+      <section class="section">
+        <div class="section-title">
+          <h2>Три режима</h2>
+          <p>на каждый день</p>
+        </div>
+        <div class="rituals" id="ritualList"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">
+          <h2>Бинауральный центр</h2>
+          <p>звук под режим</p>
+        </div>
+        <div class="panel sound-panel">
+          <div class="sound-head">
+            <div class="sound-head-row">
+              <div>
+                <h3>Звук не должен отвлекать. Он должен держать состояние.</h3>
+                <p>По умолчанию всё работает в авто-режиме: утро получает Alpha, PM — Beta, ночь — Deep Calm. Ручные настройки оставлены, если захочешь точнее подстроить себя.</p>
               </div>
-              <div class="input-wrap">
-                <label for="minInput">Минимальный успешный результат</label>
-                <input id="minInput" autocomplete="off" placeholder="Например: 10 минут без отвлечений / лечь спокойно" />
-              </div>
+              <span class="sound-badge">HEADPHONES</span>
             </div>
           </div>
-        </article>
+          <div class="sound-body">
+            <div class="sound-now" id="soundNow"></div>
+            <div class="field">
+              <label>Бинауральный режим</label>
+              <select id="binauralMode">
+                <option value="auto">Авто под практику</option>
+                <option value="alpha">Alpha Focus · 10 Hz</option>
+                <option value="beta">Beta Work · 16 Hz</option>
+                <option value="deep">Deep Calm · 7 Hz</option>
+                <option value="theta">Theta Soft · 6 Hz</option>
+                <option value="off">Выключить binaural</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Шумовой слой</label>
+              <select id="noiseMode">
+                <option value="auto">Авто под практику</option>
+                <option value="pink">Розовый шум</option>
+                <option value="brown">Коричневый шум</option>
+                <option value="warm">Тёплый brown noise</option>
+                <option value="silence">Без шума</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Громкость binaural / фона</label>
+              <div class="range-row"><input type="range" id="bedVolume" min="0" max="100" value="22"><b id="bedVolumeText">22%</b></div>
+              <p class="small-note">Оптимально тихо: звук ощущается фоном, а не забирает внимание.</p>
+            </div>
+            <div class="field">
+              <label>Фазовый сигнал дыхания</label>
+              <div class="range-row"><input type="range" id="cueVolume" min="0" max="100" value="42"><b id="cueVolumeText">42%</b></div>
+              <p class="small-note">Вдох ↑ · выдох ↓ · пауза низко · задержка двойным маркером.</p>
+            </div>
+            <div class="field">
+              <label>Точный тюнинг</label>
+              <div class="segmented">
+                <button class="seg-btn active" id="autoFitBtn">Авто-fit</button>
+                <button class="seg-btn" id="manualFitBtn">Ручной</button>
+              </div>
+              <div class="range-row" id="beatTuneRow" style="display:none"><input type="range" id="beatTune" min="-2" max="2" step="1" value="0"><b id="beatTuneText">0 Hz</b></div>
+              <p class="small-note">Оставь Auto-fit. Ручной режим нужен только если конкретная частота субъективно мешает.</p>
+            </div>
+            <div class="field">
+              <label>Слои и проверка</label>
+              <div class="toggle-row"><span>Вибро на фазах</span><button class="switch on" id="vibrateSwitch" aria-label="Вибро"></button></div>
+              <div class="segmented">
+                <button class="seg-btn" id="previewSoundBtn">Тест фона</button>
+                <button class="seg-btn" id="stopSoundBtn">Стоп звук</button>
+              </div>
+            </div>
+            <div class="headphone-note">
+              <div>🎧</div>
+              <div><strong>Для binaural нужны наушники.</strong><br>Если появляется дискомфорт, головная боль или раздражение — выключи binaural и оставь только тихий шумовой слой.</div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-        <div class="safe-note"><b>Важно.</b> Дыхательные практики и звуковые режимы не являются медицинским лечением. Если появляется головокружение, тревога, боль или дискомфорт — остановись и вернись к обычному дыханию. Бинауральные ритмы используй только в безопасной обстановке, не во время вождения. Для binaural нужны наушники.</div>
+      <div class="quick-actions section">
+        <button class="btn primary" id="startHomeBtn">Начать выбранный</button>
+        <button class="btn ghost" id="resetBtn">Сбросить день</button>
       </div>
+
+      <div class="safety">Дыхательные практики и звуковые режимы не являются медицинским лечением. Если появляется головокружение, тревога, боль, дискомфорт или ухудшение состояния — остановись и вернись к обычному дыханию. Бинауральные ритмы используй только в безопасной обстановке, в наушниках, не во время вождения и не при опасной деятельности.</div>
     </section>
 
     <section id="practiceScreen" class="screen">
-      <div class="practice-stage">
-        <div class="practice-header">
-          <button class="back-btn" id="backHomeBtn" type="button">← Назад</button>
-          <div class="practice-name"><b id="practiceTitle">Clean Start</b><span id="practiceSubtitle">5:5 · Alpha 10 Hz</span></div>
-        </div>
-
-        <div class="practice-grid mobile-stack">
-          <article class="card breath-card">
-            <div class="card-inner" style="width:100%">
-              <div class="breath-shell" id="breathShell" style="--progress:0;--orb-scale:1">
-                <div class="breath-orb" id="breathOrb"></div>
-                <div class="breath-center">
-                  <div>
-                    <div class="phase-label" id="phaseLabel">Готов</div>
-                    <div class="phase-count" id="phaseCount">00</div>
-                  </div>
+      <div class="practice-shell">
+        <div class="practice-card" id="practiceCard">
+          <div class="practice-top">
+            <div class="practice-label" id="practiceMoment">ритуал</div>
+            <div class="practice-title" id="practiceTitle">Clean Start</div>
+            <p class="practice-sub" id="practiceSub">Сначала дыхание. Потом день.</p>
+          </div>
+          <div class="breath-wrap">
+            <div class="breath-ring" id="breathRing">
+              <div class="breath-orb">
+                <div>
+                  <div class="phase-text" id="phaseText">Вдох</div>
+                  <div class="phase-count" id="phaseCount">5</div>
                 </div>
-              </div>
-              <div class="timer-line">
-                <span>осталось: <b id="totalLeft">03:00</b></span>
-                <span>цикл: <b id="cycleInfo">—</b></span>
               </div>
             </div>
-          </article>
+          </div>
+          <div class="timers">
+            <div class="timer-box"><span>Осталось</span><b id="totalTimer">03:00</b></div>
+            <div class="timer-box"><span>Фаза</span><b id="phaseTimer">00:05</b></div>
+          </div>
+          <p class="blind-hint" id="blindHint">Можно закрыть глаза: вдох — вверх, выдох — вниз, пауза — низко.</p>
+        </div>
 
-          <aside class="mobile-stack">
-            <article class="card">
-              <div class="card-inner audio-panel">
-                <div class="section-title">
-                  <h2>Звук</h2>
-                  <p id="audioLabel">Alpha 10 Hz + pink noise</p>
-                </div>
-                <div class="audio-grid">
-                  <div class="setting-row">
-                    <span><b>Фазовые сигналы</b>вдох ↑ · выдох ↓ · пауза •</span>
-                    <input type="range" id="cueVolume" min="0" max="100" value="44" />
-                  </div>
-                  <div class="setting-row">
-                    <span><b>Фоновый слой</b>binaural / noise</span>
-                    <input type="range" id="bedVolume" min="0" max="100" value="20" />
-                  </div>
-                  <label class="toggle-row">
-                    <span><b>Бинауральный слой</b><br />Только в наушниках.</span>
-                    <span class="switch"><input id="binauralToggle" type="checkbox" checked /><span class="slider"></span></span>
-                  </label>
-                  <label class="toggle-row">
-                    <span><b>Вибро-сигнал</b><br />Если поддерживает телефон.</span>
-                    <span class="switch"><input id="vibrateToggle" type="checkbox" checked /><span class="slider"></span></span>
-                  </label>
-                </div>
-              </div>
-            </article>
+        <aside class="panel desktop-only">
+          <div class="section-title" style="margin-top:0"><h2>Сессия</h2><p>тихо и точно</p></div>
+          <p class="small-note" id="sessionDetails"></p>
+          <div class="chips" id="sessionChips"></div>
+          <p class="small-note">Функционал на телефоне работает так же: кнопки остаются внизу, круг в центре, звук запускается после нажатия.</p>
+        </aside>
 
-            <article class="card desktop-only">
-              <div class="card-inner">
-                <div class="section-title"><h2>Подсказка</h2><p>Смысл текущей практики.</p></div>
-                <p class="lead" id="practiceGuidance">Сначала дыхание. Потом день.</p>
-              </div>
-            </article>
-          </aside>
+        <div class="practice-controls">
+          <button class="btn primary" id="pauseBtn">Пауза</button>
+          <div class="control-row">
+            <button class="btn secondary" id="restartBtn">Сначала</button>
+            <button class="btn danger" id="finishBtn">Завершить</button>
+          </div>
         </div>
       </div>
     </section>
 
     <section id="doneScreen" class="screen">
-      <article class="card done-card">
-        <div class="done-icon">✓</div>
-        <h2>Практика закрыта.</h2>
-        <p id="doneText">Минимум засчитан. Следующая задача — не идеальный день, а возвращение в систему.</p>
-        <div class="summary-grid">
-          <div class="summary-item"><span>ритуал</span><b id="donePractice">Clean Start</b></div>
-          <div class="summary-item"><span>время</span><b id="doneTime">3 мин</b></div>
-          <div class="summary-item"><span>сегодня</span><b id="doneToday">1/3</b></div>
-          <div class="summary-item"><span>серия</span><b id="doneStreak">1 день</b></div>
+      <div class="done-card">
+        <div class="eyebrow">СЕССИЯ ЗАВЕРШЕНА</div>
+        <h2>Практика засчитана.</h2>
+        <p id="doneText">Минимум выполнен. Состояние собрано.</p>
+        <div class="report" id="reportBox"></div>
+        <div class="done-actions">
+          <button class="btn primary" id="saveBtn">Сохранить результат</button>
+          <button class="btn secondary" id="copyBtn">Скопировать отчёт</button>
+          <button class="btn ghost" id="againBtn">Ещё одна практика</button>
+          <button class="btn ghost" id="homeBtn">На главный экран</button>
         </div>
-      </article>
+      </div>
     </section>
   </main>
-
-  <nav class="bottom-actions" id="bottomBar">
-    <div class="bottom-inner" id="homeActions">
-      <button class="secondary-btn" id="autoBtn" type="button">Подобрать сейчас</button>
-      <button class="primary-btn" id="startBtn" type="button">Начать выбранный</button>
-    </div>
-    <div class="bottom-inner" id="practiceActions" style="display:none">
-      <button class="secondary-btn" id="testSignalsBtn" type="button">Сигналы</button>
-      <button class="primary-btn" id="pauseBtn" type="button">Пауза</button>
-      <button class="danger-btn" id="finishBtn" type="button">Завершить</button>
-    </div>
-    <div class="bottom-inner single" id="doneActions" style="display:none">
-      <button class="secondary-btn" id="againBtn" type="button">Ещё раз</button>
-      <button class="primary-btn" id="homeBtn" type="button">На главный</button>
-    </div>
-  </nav>
 
   <script>
     const $ = (id) => document.getElementById(id);
 
-    const PRACTICES = {
-      morning: {
-        id:'morning', icon:'☀', moment:'утро · после пробуждения', title:'Clean Start', tag:'3 мин', duration:180,
-        desc:'Мягко включиться после сна. Без разгона, без давления, без хаоса.',
-        guidance:'Собери состояние. Не разгоняй себя. Сначала ровное дыхание — потом день.',
-        patternText:'5с вдох · 5с выдох', audioText:'Alpha Focus 10 Hz + pink noise', goalText:'спокойный запуск',
-        phases:[{label:'Вдох',type:'inhale',sec:5},{label:'Выдох',type:'exhale',sec:5}],
-        binaural:10, base:210, noise:'pink', bed:0.20, cue:0.44,
-        placeholders:['Запуск дня без суеты','3 минуты собрать себя']
+    const rituals = {
+      morning:{
+        id:'morning', moment:'Утро', name:'Clean Start', time:'3 мин', duration:180,
+        line:'После пробуждения: включиться мягко, без хаоса и давления.',
+        intent:'Собрать себя. Не разгонять нервную систему агрессивно.',
+        breath:'5 сек вдох · 5 сек выдох', binaural:'Alpha Focus 10 Hz', noise:'Розовый шум', beat:10, noiseType:'pink', base:180,
+        quote:'Сначала собрать себя. Потом день.', chips:['5:5','без задержек','Alpha 10 Hz','розовый шум']
       },
-      pm: {
-        id:'pm', icon:'◆', moment:'перед PM · обучение и структура', title:'PM Tactical Focus', tag:'4 мин', duration:240,
-        desc:'Сначала короткий сброс напряжения, затем 4:6 для рабочей ясности.',
-        guidance:'Не дави. Сначала длинный выдох. Потом следующая маленькая PM-задача.',
-        patternText:'3 вздоха → 4с вдох · 6с выдох', audioText:'Beta Work 16 Hz + brown noise', goalText:'ясность перед работой',
-        intro:[
-          {label:'Вдох',type:'inhale',sec:1.2},{label:'Довдох',type:'topup',sec:.8},{label:'Длинный выдох',type:'exhale',sec:5.0},
-          {label:'Вдох',type:'inhale',sec:1.2},{label:'Довдох',type:'topup',sec:.8},{label:'Длинный выдох',type:'exhale',sec:5.0},
-          {label:'Вдох',type:'inhale',sec:1.2},{label:'Довдох',type:'topup',sec:.8},{label:'Длинный выдох',type:'exhale',sec:5.0}
-        ],
-        phases:[{label:'Вдох',type:'inhale',sec:4},{label:'Выдох',type:'exhale',sec:6}],
-        binaural:16, base:205, noise:'brown', bed:0.22, cue:0.46,
-        placeholders:['Разобрать stakeholder management','10 минут и 5 тезисов']
+      pm:{
+        id:'pm', moment:'Перед PM', name:'PM Tactical Focus', time:'4 мин', duration:240,
+        line:'Перед обучением, структурой, задачей или созвоном.',
+        intent:'Снять внутренний шум и войти в рабочую ясность.',
+        breath:'3 сброса → 4 сек вдох · 6 сек выдох', binaural:'Beta Work 16 Hz', noise:'Коричневый шум', beat:16, noiseType:'brown', base:190,
+        quote:'Не дави. Собери внимание.', chips:['PM','3 сброса','4:6','Beta 16 Hz','brown noise']
       },
-      night: {
-        id:'night', icon:'☾', moment:'ночь · перед сном', title:'Night Downshift', tag:'5 мин', duration:300,
-        desc:'Длинный выдох, мягкая пауза и тёплый звук. День закрывается спокойно.',
-        guidance:'Обороты вниз. Ничего не доказывай. Выдох длиннее вдоха — тело получает сигнал завершения.',
-        patternText:'4с вдох · 8с выдох · 2с пауза', audioText:'Deep Calm 7 Hz + warm brown', goalText:'снижение оборотов',
-        phases:[{label:'Вдох',type:'inhale',sec:4},{label:'Выдох',type:'exhale',sec:8},{label:'Пауза',type:'pause',sec:2}],
-        binaural:7, base:195, noise:'warmBrown', bed:0.18, cue:0.38,
-        placeholders:['Закрыть день и успокоить голову','Лечь без внутренней гонки']
+      night:{
+        id:'night', moment:'Ночь', name:'Night Downshift', time:'5 мин', duration:300,
+        line:'Перед сном: закрыть день, снизить обороты, уйти в тишину.',
+        intent:'Мягкое замедление без сильных задержек.',
+        breath:'4 сек вдох · 8 сек выдох · 2 сек пауза', binaural:'Deep Calm 7 Hz', noise:'Тёплый brown noise', beat:7, noiseType:'warm', base:170,
+        quote:'День закрыт. Обороты вниз.', chips:['ночь','4:8:2','Deep Calm 7 Hz','низкая яркость']
       }
     };
 
-    let selected = 'morning';
-    let currentScript = [];
-    let timer = null;
-    let running = false;
-    let paused = false;
-    let startMs = 0;
-    let pauseStarted = 0;
-    let pausedMs = 0;
-    let currentPhaseIndex = -1;
-    let completedPractice = null;
+    const soundProfiles = {
+      alpha:{name:'Alpha Focus', beat:10, base:180, label:'10 Hz · спокойное включение', purpose:'утро, чтение, мягкое обучение'},
+      beta:{name:'Beta Work', beat:16, base:190, label:'16 Hz · рабочая ясность', purpose:'PM, структура, планирование, выполнение'},
+      deep:{name:'Deep Calm', beat:7, base:170, label:'7 Hz · ночное снижение оборотов', purpose:'вечер, ночь, мягкое завершение'},
+      theta:{name:'Theta Soft', beat:6, base:165, label:'6 Hz · творческое замедление', purpose:'идеи, письмо, спокойная работа'}
+    };
 
-    const screens = {home:$('homeScreen'), practice:$('practiceScreen'), done:$('doneScreen')};
-    const actionSets = {home:$('homeActions'), practice:$('practiceActions'), done:$('doneActions')};
-
-    function showScreen(name){
-      Object.values(screens).forEach(s => s.classList.remove('active'));
-      screens[name].classList.add('active');
-      Object.entries(actionSets).forEach(([k,v]) => v.style.display = k === name ? (k === 'practice' ? 'grid' : 'grid') : 'none');
-      window.scrollTo({top:0,behavior:'smooth'});
-    }
-
-    function formatTime(total){
-      total = Math.max(0, Math.ceil(total));
-      const m = Math.floor(total/60).toString().padStart(2,'0');
-      const s = Math.floor(total%60).toString().padStart(2,'0');
-      return `${m}:${s}`;
-    }
-
-    function todayKey(){
-      const d = new Date();
-      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    }
-
-    function loadStats(){
-      try{return JSON.parse(localStorage.getItem('markovBreathStatsV8') || '{}')}catch(e){return {}}
-    }
-    function saveStats(data){localStorage.setItem('markovBreathStatsV8', JSON.stringify(data))}
-    function ensureToday(){
-      const data = loadStats();
-      const key = todayKey();
-      if(!data.days) data.days = {};
-      if(!data.days[key]) data.days[key] = {morning:false,pm:false,night:false,sessions:0,minutes:0};
-      return {data,key,day:data.days[key]};
-    }
-
-    function countDone(day){return ['morning','pm','night'].filter(k => day && day[k]).length}
-    function calcStreak(data){
-      if(!data.days) return 0;
-      let streak = 0;
-      const d = new Date();
-      for(let i=0;i<365;i++){
-        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        const day = data.days[key];
-        if(day && countDone(day) > 0){streak++; d.setDate(d.getDate()-1)} else break;
-      }
-      return streak;
-    }
-
-    function updateStatsUI(){
-      const {data,key,day} = ensureToday();
-      const done = countDone(day);
-      $('todayDoneTop').textContent = `${done}/3`;
-      ['morning','pm','night'].forEach(id => $('chip-'+id).classList.toggle('done', !!day[id]));
-      $('doneToday').textContent = `${done}/3`;
-      $('doneStreak').textContent = `${calcStreak(data)} дн.`;
-      saveStats(data);
-    }
-
-    function markDone(id){
-      const {data,day} = ensureToday();
-      day[id] = true;
-      day.sessions = (day.sessions || 0) + 1;
-      day.minutes = (day.minutes || 0) + Math.round(PRACTICES[id].duration / 60);
-      saveStats(data);
-      updateStatsUI();
-    }
-
-    function recommend(){
-      const h = new Date().getHours();
-      // Под реальный режим: подъём около 11, PM до работы, ночь после 23.
-      if(h >= 23 || h < 4) return 'night';
-      if(h >= 10 && h < 12) return 'morning';
-      if(h >= 12 && h < 17) return 'pm';
-      if(h >= 4 && h < 10) return 'morning';
-      if(h >= 21) return 'night';
-      return 'pm';
-    }
-
-    function selectPractice(id, silent=false){
-      selected = id;
-      const p = PRACTICES[id];
-      $('selectedMoment').textContent = p.moment;
-      $('selectedTitle').textContent = p.title;
-      $('selectedDesc').textContent = p.desc;
-      $('selectedDuration').textContent = p.tag;
-      $('selectedSpecs').innerHTML = `
-        <div class="spec"><span>дыхание</span><b>${p.patternText}</b></div>
-        <div class="spec"><span>звук</span><b>${p.audioText}</b></div>
-        <div class="spec"><span>цель</span><b>${p.goalText}</b></div>
-        <div class="spec"><span>режим</span><b>Blind Focus</b></div>`;
-      $('intentInput').placeholder = p.placeholders[0];
-      $('minInput').placeholder = p.placeholders[1];
-      $('practiceTitle').textContent = p.title;
-      $('practiceSubtitle').textContent = p.patternText;
-      $('audioLabel').textContent = p.audioText;
-      $('practiceGuidance').textContent = p.guidance;
-      $('cueVolume').value = Math.round(p.cue*100);
-      $('bedVolume').value = Math.round(p.bed*100);
-      document.querySelectorAll('.routine-card').forEach(btn => btn.classList.toggle('active', btn.dataset.id === id));
-      if(!silent && navigator.vibrate) navigator.vibrate(10);
-    }
-
-    function renderRoutines(){
-      $('routineList').innerHTML = Object.values(PRACTICES).map(p => `
-        <button class="routine-card" type="button" data-id="${p.id}">
-          <div class="routine-head"><strong>${p.icon} ${p.title}</strong><span class="routine-tag">${p.tag}</span></div>
-          <p>${p.desc}</p>
-          <div class="routine-foot"><span class="tiny-pill">${p.patternText}</span><span class="tiny-pill">${p.audioText}</span></div>
-        </button>
-      `).join('');
-      document.querySelectorAll('.routine-card').forEach(btn => btn.addEventListener('click', () => selectPractice(btn.dataset.id)));
-    }
-
-    function buildScript(p){
-      const script = [];
-      let acc = 0;
-      const pushPhase = (phase) => {
-        if(acc >= p.duration) return;
-        const sec = Math.min(phase.sec, p.duration - acc);
-        script.push({...phase, start:acc, sec});
-        acc += sec;
+    function resolvedSound(r){
+      const autoMap={morning:'alpha', pm:'beta', night:'deep'};
+      const mode=settings.binauralMode==='auto' ? autoMap[r.id] : settings.binauralMode;
+      const noise=settings.noiseMode==='auto' ? r.noiseType : settings.noiseMode;
+      const profile = soundProfiles[mode] || null;
+      const beat = profile ? Math.max(4, profile.beat + (settings.fit==='manual'?settings.beatTune:0)) : 0;
+      const base = profile ? profile.base : r.base;
+      const noiseNames={pink:'Розовый шум', brown:'Коричневый шум', warm:'Тёплый brown noise', silence:'Без шума'};
+      return {
+        mode, profile, beat, base, noise,
+        binauralOn: mode !== 'off' && !!profile,
+        binauralName: profile ? `${profile.name} · ${beat} Hz` : 'Binaural выключен',
+        noiseName: noiseNames[noise] || 'Авто-шум',
+        purpose: profile ? profile.purpose : 'тишина без бинаурального слоя'
       };
-      if(p.intro) p.intro.forEach(pushPhase);
-      while(acc < p.duration){p.phases.forEach(pushPhase)}
-      return script;
     }
 
-    function findPhase(elapsed){
-      if(!currentScript.length) return null;
-      for(let i=0;i<currentScript.length;i++){
-        const ph = currentScript[i];
-        if(elapsed >= ph.start && elapsed < ph.start + ph.sec) return {phase:ph,index:i};
-      }
-      return {phase:currentScript[currentScript.length-1], index:currentScript.length-1};
-    }
+    const state = {
+      selected:'morning', screen:'home', timeline:[], index:0,
+      running:false, startedAt:0, phaseStartedAt:0, totalElapsed:0, phaseElapsed:0,
+      phaseDuration:0, remaining:0, lastTick:0, saved:false
+    };
 
-    function scaleForPhase(type, ratio){
-      if(type === 'inhale') return 1 + .30 * ratio;
-      if(type === 'topup') return 1.22 + .09 * ratio;
-      if(type === 'exhale') return 1.30 - .30 * ratio;
-      if(type === 'hold') return 1.30;
-      if(type === 'pause') return 1.0;
-      return 1;
-    }
+    const settings = {
+      cueVolume:.42, bedVolume:.22, binauralMode:'auto', noiseMode:'auto', fit:'auto', beatTune:0, vibrate:true
+    };
 
     class AudioEngine{
-      constructor(){this.ctx=null;this.nodes=[];this.master=null;this.bedGain=null;this.cueGain=null;this.started=false;}
+      constructor(){this.ctx=null;this.master=null;this.bedGain=null;this.cueGain=null;this.sources=[];this.noiseSource=null;this.started=false;}
       async init(){
-        if(!this.ctx){this.ctx = new (window.AudioContext || window.webkitAudioContext)();}
+        if(!this.ctx){
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+          this.master = this.ctx.createGain(); this.master.gain.value=.85; this.master.connect(this.ctx.destination);
+          this.bedGain = this.ctx.createGain(); this.bedGain.gain.value=0; this.bedGain.connect(this.master);
+          this.cueGain = this.ctx.createGain(); this.cueGain.gain.value=settings.cueVolume; this.cueGain.connect(this.master);
+        }
         if(this.ctx.state === 'suspended') await this.ctx.resume();
-        if(!this.master){
-          this.master = this.ctx.createGain();
-          this.master.gain.value = .72;
-          this.master.connect(this.ctx.destination);
-          this.bedGain = this.ctx.createGain();
-          this.cueGain = this.ctx.createGain();
-          this.bedGain.connect(this.master);
-          this.cueGain.connect(this.master);
-        }
       }
-      stopBed(fade=1.2){
+      setVolumes(){ if(this.bedGain) this.bedGain.gain.setTargetAtTime(settings.bedVolume, this.ctx.currentTime, .08); if(this.cueGain) this.cueGain.gain.setTargetAtTime(settings.cueVolume, this.ctx.currentTime, .04); }
+      stopBed(){
         if(!this.ctx) return;
-        const now = this.ctx.currentTime;
-        if(this.bedGain){
-          this.bedGain.gain.cancelScheduledValues(now);
-          this.bedGain.gain.setValueAtTime(this.bedGain.gain.value, now);
-          this.bedGain.gain.linearRampToValueAtTime(0.0001, now + fade);
-        }
-        this.nodes.forEach(n => {try{n.stop(now + fade + .05)}catch(e){}});
-        this.nodes = [];
+        const t=this.ctx.currentTime;
+        if(this.bedGain) this.bedGain.gain.cancelScheduledValues(t), this.bedGain.gain.setTargetAtTime(0,t,.35);
+        setTimeout(()=>{this.sources.forEach(s=>{try{s.stop()}catch(e){}});this.sources=[]; if(this.noiseSource){try{this.noiseSource.stop()}catch(e){} this.noiseSource=null;}},900);
       }
-      async startBed(p){
-        await this.init();
-        this.stopBed(.15);
-        const ctx = this.ctx;
-        const now = ctx.currentTime;
-        const bedVol = Number($('bedVolume').value)/100;
-        this.bedGain.gain.cancelScheduledValues(now);
-        this.bedGain.gain.setValueAtTime(0.0001, now);
-        this.bedGain.gain.linearRampToValueAtTime(bedVol, now + 8);
-
-        if($('binauralToggle').checked){
-          const left = ctx.createOscillator();
-          const right = ctx.createOscillator();
-          const gL = ctx.createGain();
-          const gR = ctx.createGain();
-          const merger = ctx.createChannelMerger(2);
-          left.type = 'sine'; right.type = 'sine';
-          left.frequency.value = p.base;
-          right.frequency.value = p.base + p.binaural;
-          gL.gain.value = .10; gR.gain.value = .10;
-          left.connect(gL).connect(merger,0,0);
-          right.connect(gR).connect(merger,0,1);
-          merger.connect(this.bedGain);
-          left.start(now); right.start(now);
-          this.nodes.push(left,right);
+      startBed(ritual){
+        if(!this.ctx) return;
+        this.stopBed();
+        const t=this.ctx.currentTime;
+        const sound = resolvedSound(ritual);
+        this.bedGain.gain.cancelScheduledValues(t); this.bedGain.gain.setValueAtTime(0,t); this.bedGain.gain.linearRampToValueAtTime(settings.bedVolume, t+5.5);
+        if(sound.noise !== 'silence'){
+          const noiseGain=this.ctx.createGain(); noiseGain.gain.value=.34; noiseGain.connect(this.bedGain);
+          const buffer=this.noiseBuffer(sound.noise);
+          const src=this.ctx.createBufferSource(); src.buffer=buffer; src.loop=true; src.connect(noiseGain); src.start();
+          this.noiseSource=src; this.sources.push(src);
         }
-
-        const noise = this.makeNoise(p.noise, 2.5);
-        const src = ctx.createBufferSource();
-        src.buffer = noise;
-        src.loop = true;
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.value = p.id === 'pm' ? 650 : p.id === 'night' ? 420 : 850;
-        const g = ctx.createGain();
-        g.gain.value = p.id === 'pm' ? .55 : .42;
-        src.connect(filter).connect(g).connect(this.bedGain);
-        src.start(now);
-        this.nodes.push(src);
+        if(sound.binauralOn){
+          const merger=this.ctx.createChannelMerger(2);
+          const left=this.ctx.createOscillator(); const right=this.ctx.createOscillator();
+          const gl=this.ctx.createGain(); const gr=this.ctx.createGain(); gl.gain.value=.045; gr.gain.value=.045;
+          left.type='sine'; right.type='sine'; left.frequency.value=sound.base; right.frequency.value=sound.base + sound.beat;
+          left.connect(gl); right.connect(gr); gl.connect(merger,0,0); gr.connect(merger,0,1); merger.connect(this.bedGain);
+          left.start(); right.start(); this.sources.push(left,right);
+        }
       }
-      makeNoise(type, seconds){
-        const ctx = this.ctx;
-        const length = Math.floor(ctx.sampleRate * seconds);
-        const buffer = ctx.createBuffer(2, length, ctx.sampleRate);
-        for(let ch=0; ch<2; ch++){
-          const data = buffer.getChannelData(ch);
-          let last = 0;
-          let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
-          for(let i=0;i<length;i++){
-            const white = Math.random()*2 - 1;
-            if(type === 'pink'){
-              b0 = .99886*b0 + white*.0555179;
-              b1 = .99332*b1 + white*.0750759;
-              b2 = .96900*b2 + white*.1538520;
-              b3 = .86650*b3 + white*.3104856;
-              b4 = .55000*b4 + white*.5329522;
-              b5 = -.7616*b5 - white*.0168980;
-              data[i] = (b0+b1+b2+b3+b4+b5+b6+white*.5362)*.055;
-              b6 = white*.115926;
-            }else{
-              last = (last + (0.022 * white)) / 1.022;
-              data[i] = last * (type === 'warmBrown' ? 4.2 : 3.6);
-            }
+      noiseBuffer(type){
+        const sr=this.ctx.sampleRate, len=sr*2, buffer=this.ctx.createBuffer(1,len,sr), data=buffer.getChannelData(0);
+        let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0,last=0;
+        for(let i=0;i<len;i++){
+          const white=Math.random()*2-1; let out=white;
+          if(type==='pink'){
+            b0=.99886*b0+white*.0555179; b1=.99332*b1+white*.0750759; b2=.96900*b2+white*.1538520;
+            b3=.86650*b3+white*.3104856; b4=.55000*b4+white*.5329522; b5=-.7616*b5-white*.0168980;
+            out=(b0+b1+b2+b3+b4+b5+b6+white*.5362)*.11; b6=white*.115926;
+          } else {
+            last=(last + (.02 * white)) / 1.02; out=last*3.2;
+            if(type==='warm') out*=.72;
           }
+          data[i]=Math.max(-1,Math.min(1,out));
         }
         return buffer;
       }
-      setVolumes(){
-        if(!this.ctx) return;
-        const now = this.ctx.currentTime;
-        this.bedGain.gain.setTargetAtTime(Number($('bedVolume').value)/100, now, .08);
-        this.cueGain.gain.setTargetAtTime(Number($('cueVolume').value)/100, now, .04);
-      }
-      cue(type){
-        if(!this.ctx) return;
-        this.setVolumes();
-        const ctx = this.ctx;
-        const now = ctx.currentTime;
-        const playTone = (freqA, freqB, startOffset, dur, gain=.18) => {
-          const osc = ctx.createOscillator();
-          const g = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freqA, now + startOffset);
-          osc.frequency.exponentialRampToValueAtTime(freqB, now + startOffset + dur);
-          g.gain.setValueAtTime(0.0001, now + startOffset);
-          g.gain.exponentialRampToValueAtTime(gain, now + startOffset + .018);
-          g.gain.exponentialRampToValueAtTime(0.0001, now + startOffset + dur);
-          osc.connect(g).connect(this.cueGain);
-          osc.start(now + startOffset);
-          osc.stop(now + startOffset + dur + .03);
+      cue(kind){
+        if(!this.ctx || settings.cueVolume<=0) return;
+        const t=this.ctx.currentTime;
+        const play=(freq1,freq2,dur,delay=0,type='sine')=>{
+          const o=this.ctx.createOscillator(), g=this.ctx.createGain();
+          o.type=type; o.frequency.setValueAtTime(freq1,t+delay); o.frequency.exponentialRampToValueAtTime(freq2,t+delay+dur);
+          g.gain.setValueAtTime(0,t+delay); g.gain.linearRampToValueAtTime(settings.cueVolume*.32,t+delay+.012); g.gain.exponentialRampToValueAtTime(.0001,t+delay+dur);
+          o.connect(g); g.connect(this.cueGain); o.start(t+delay); o.stop(t+delay+dur+.02);
         };
-        if(type === 'inhale') playTone(520,720,0,.16,.16);
-        else if(type === 'topup') playTone(690,820,0,.12,.14);
-        else if(type === 'exhale') playTone(440,250,0,.22,.16);
-        else if(type === 'hold') {playTone(480,480,0,.07,.13); playTone(480,480,.13,.07,.11)}
-        else if(type === 'pause') playTone(220,210,0,.14,.14);
-        else playTone(360,360,0,.10,.12);
+        if(kind==='inhale') play(430,660,.20,0,'sine');
+        else if(kind==='exhale') play(620,320,.28,0,'sine');
+        else if(kind==='hold'){play(520,520,.075,0,'triangle'); play(520,520,.075,.14,'triangle');}
+        else if(kind==='pause') play(240,220,.16,0,'triangle');
+        else if(kind==='sip') play(760,800,.08,0,'sine');
+        if(settings.vibrate && navigator.vibrate){
+          const patterns={inhale:[22], exhale:[38], hold:[18,70,18], pause:[55], sip:[14]};
+          navigator.vibrate(patterns[kind]||[20]);
+        }
       }
       async test(){
         await this.init();
-        const seq = ['inhale','hold','exhale','pause'];
-        seq.forEach((t,i)=>setTimeout(()=>{this.cue(t); vibrate(t)}, i*560));
+        this.setVolumes();
+        ['inhale','hold','sip','exhale','pause'].forEach((k,i)=>setTimeout(()=>this.cue(k),i*650));
       }
     }
     const audio = new AudioEngine();
 
-    function vibrate(type){
-      if(!$('vibrateToggle').checked || !navigator.vibrate) return;
-      const map = {inhale:18, topup:12, exhale:28, hold:[10,50,10], pause:16};
-      navigator.vibrate(map[type] || 10);
+    function pad(n){return String(Math.max(0,Math.floor(n))).padStart(2,'0')}
+    function fmt(sec){return `${pad(sec/60)}:${pad(sec%60)}`}
+    function todayKey(){return new Date().toISOString().slice(0,10)}
+    function hour(){return new Date().getHours()}
+    function autoId(){const h=hour(); if(h>=0&&h<4) return 'night'; if(h>=7&&h<14) return 'morning'; if(h>=14&&h<23) return 'pm'; return 'night'}
+    function loadDay(){
+      const raw=localStorage.getItem('markovBreathDay');
+      let data=raw?JSON.parse(raw):null;
+      if(!data || data.date!==todayKey()) data={date:todayKey(), morning:false, pm:false, night:false, sessions:0, seconds:0};
+      return data;
     }
-
-    function startPractice(){
-      const p = PRACTICES[selected];
-      completedPractice = p.id;
-      currentScript = buildScript(p);
-      running = true; paused = false; pausedMs = 0; currentPhaseIndex = -1;
-      startMs = performance.now();
-      $('pauseBtn').textContent = 'Пауза';
-      $('phaseLabel').textContent = 'Старт';
-      $('phaseCount').textContent = '00';
-      $('totalLeft').textContent = formatTime(p.duration);
-      $('cycleInfo').textContent = '1';
-      showScreen('practice');
-      audio.startBed(p);
-      clearInterval(timer);
-      timer = setInterval(tick, 120);
-      tick();
+    function saveDay(data){localStorage.setItem('markovBreathDay', JSON.stringify(data));}
+    function renderToday(){
+      const d=loadDay();
+      $('todayGrid').innerHTML = ['morning','pm','night'].map(id=>`<div class="today-item ${d[id]?'done':''}"><b>${d[id]?'✓':'○'}</b><span>${rituals[id].moment}</span></div>`).join('');
     }
+    function ritualHTML(r, compact=false){
+      return `<div class="ritual-head"><div><div class="ritual-kicker">${r.moment}</div><h3>${r.name}</h3><p>${compact?r.intent:r.line}</p></div><div class="ritual-time">${r.time}</div></div><div class="chips">${r.chips.map(c=>`<span class="chip">${c}</span>`).join('')}</div>`;
+    }
+    function renderRituals(){
+      $('ritualList').innerHTML = Object.values(rituals).map(r=>`<button class="ritual ${state.selected===r.id?'active':''}" data-id="${r.id}">${ritualHTML(r)}</button>`).join('');
+      document.querySelectorAll('[data-id]').forEach(el=>el.onclick=()=>selectRitual(el.dataset.id));
+      $('selectedCard').innerHTML = ritualHTML(rituals[state.selected], true);
+      $('selectedWhy').textContent = state.selected===autoId() ? 'лучший fit сейчас' : 'выбран вручную';
+      renderSoundUI();
+    }
+    function renderSoundUI(){
+      const r=rituals[state.selected];
+      const s=resolvedSound(r);
+      const phrase = r.id==='morning'
+        ? 'Для утра: мягкий Alpha, чтобы включиться без рывка.'
+        : r.id==='pm'
+          ? 'Для PM: Beta Work, чтобы поддержать рабочую ясность.'
+          : 'Для ночи: Deep Calm, чтобы снизить обороты.';
+      $('soundNow').innerHTML = `<b>${s.binauralName} + ${s.noiseName}</b><span>${phrase}<br>Назначение: ${s.purpose}. Громкость — низкая, чтобы звук был якорем, а не раздражителем.</span>`;
+    }
+    function selectRitual(id){state.selected=id;renderRituals();}
+    function autoSelect(){selectRitual(autoId());}
 
-    function tick(){
-      if(!running || paused) return;
-      const p = PRACTICES[completedPractice || selected];
-      const elapsed = Math.max(0, (performance.now() - startMs - pausedMs) / 1000);
-      if(elapsed >= p.duration){completePractice(false);return;}
-      const info = findPhase(elapsed);
-      if(!info) return;
-      const {phase,index} = info;
-      if(index !== currentPhaseIndex){
-        currentPhaseIndex = index;
-        audio.cue(phase.type);
-        vibrate(phase.type);
+    function buildTimeline(r){
+      const tl=[];
+      const push=(kind,label,dur)=>tl.push({kind,label,dur});
+      if(r.id==='pm'){
+        for(let i=0;i<3;i++){push('inhale','Вдох',1.2);push('sip','Довдох',.7);push('exhale','Длинный выдох',5.4)}
+        while(tl.reduce((s,p)=>s+p.dur,0) < r.duration){push('inhale','Вдох',4);push('exhale','Выдох',6)}
+      } else if(r.id==='night'){
+        while(tl.reduce((s,p)=>s+p.dur,0) < r.duration){push('inhale','Вдох',4);push('exhale','Выдох',8);push('pause','Пауза',2)}
+      } else {
+        while(tl.reduce((s,p)=>s+p.dur,0) < r.duration){push('inhale','Вдох',5);push('exhale','Выдох',5)}
       }
-      const phaseElapsed = elapsed - phase.start;
-      const ratio = Math.max(0, Math.min(1, phaseElapsed / phase.sec));
-      const left = phase.sec - phaseElapsed;
-      const progress = Math.max(0, Math.min(100, elapsed / p.duration * 100));
-      $('phaseLabel').textContent = phase.label;
-      $('phaseCount').textContent = String(Math.ceil(left)).padStart(2,'0');
-      $('totalLeft').textContent = formatTime(p.duration - elapsed);
-      $('breathShell').style.setProperty('--progress', progress.toFixed(2));
-      $('breathShell').style.setProperty('--orb-scale', scaleForPhase(phase.type, ratio).toFixed(3));
-      $('breathOrb').classList.toggle('exhale', phase.type === 'exhale' || phase.type === 'pause');
-      const cycleLen = (p.phases || []).reduce((s,x)=>s+x.sec,0) || 1;
-      const afterIntro = Math.max(0, elapsed - (p.intro ? p.intro.reduce((s,x)=>s+x.sec,0) : 0));
-      $('cycleInfo').textContent = Math.max(1, Math.floor(afterIntro / cycleLen) + 1);
+      let sum=0; return tl.map(p=>{const left=r.duration-sum; const phase={...p,dur:Math.min(p.dur,left)}; sum+=phase.dur; return phase;}).filter(p=>p.dur>.05);
     }
-
-    function pauseResume(){
-      if(!running) return;
-      if(!paused){
-        paused = true;
-        pauseStarted = performance.now();
-        $('pauseBtn').textContent = 'Продолжить';
-        audio.stopBed(.4);
-      }else{
-        paused = false;
-        pausedMs += performance.now() - pauseStarted;
-        $('pauseBtn').textContent = 'Пауза';
-        audio.startBed(PRACTICES[completedPractice || selected]);
+    function show(id){
+      ['homeScreen','practiceScreen','doneScreen'].forEach(s=>$(s).classList.remove('active'));
+      $(id+'Screen').classList.add('active'); state.screen=id; window.scrollTo({top:0,behavior:'smooth'});
+    }
+    function setupPractice(){
+      const r=rituals[state.selected];
+      state.timeline=buildTimeline(r); state.index=0; state.totalElapsed=0; state.phaseElapsed=0; state.phaseDuration=state.timeline[0].dur; state.remaining=r.duration; state.running=true; state.saved=false; state.lastTick=performance.now();
+      $('practiceMoment').textContent=r.moment; $('practiceTitle').textContent=r.name; $('practiceSub').textContent=r.quote;
+      const snd=resolvedSound(r);
+      $('sessionDetails').textContent=`${r.intent}\n\nДыхание: ${r.breath}\nЗвук: ${snd.binauralName} + ${snd.noiseName}`;
+      $('sessionChips').innerHTML=r.chips.map(c=>`<span class="chip">${c}</span>`).join('');
+      $('pauseBtn').textContent='Пауза';
+      updatePhase(true); updateUI(); show('practice');
+      audio.init().then(()=>{audio.setVolumes(); audio.startBed(r); audio.cue(state.timeline[0].kind);});
+      requestAnimationFrame(tick);
+    }
+    function updatePhase(silent=false){
+      const p=state.timeline[state.index]; if(!p) return finishPractice(false);
+      state.phaseDuration=p.dur; state.phaseElapsed=0;
+      $('phaseText').textContent=p.label; $('phaseCount').textContent=Math.ceil(p.dur);
+      const card=$('practiceCard'); card.className='practice-card phase-'+p.kind;
+      if(!silent) audio.cue(p.kind);
+    }
+    function tick(now){
+      if(state.screen!=='practice') return;
+      if(!state.lastTick) state.lastTick=now;
+      const delta=(now-state.lastTick)/1000; state.lastTick=now;
+      if(state.running){
+        state.totalElapsed+=delta; state.phaseElapsed+=delta;
+        const r=rituals[state.selected]; state.remaining=Math.max(0,r.duration-state.totalElapsed);
+        if(state.phaseElapsed>=state.phaseDuration-.02){state.index++; updatePhase();}
+        if(state.remaining<=0) return finishPractice(true);
       }
+      updateUI(); requestAnimationFrame(tick);
     }
-
-    function completePractice(manual=true){
-      if(!running && manual) return;
-      const id = completedPractice || selected;
-      running = false; paused = false;
-      clearInterval(timer);
-      audio.stopBed(1.4);
-      markDone(id);
-      const p = PRACTICES[id];
-      $('donePractice').textContent = p.title;
-      $('doneTime').textContent = `${Math.round(p.duration/60)} мин`;
-      $('doneText').textContent = manual ? 'Ты завершил практику. Даже короткое возвращение в систему засчитывается.' : 'Практика завершена. Минимум засчитан. Состояние собрано.';
-      showScreen('done');
+    function updateUI(){
+      const r=rituals[state.selected]; const p=state.timeline[state.index]||state.timeline[state.timeline.length-1];
+      const phaseLeft=Math.max(0,(p?p.dur:0)-state.phaseElapsed);
+      $('totalTimer').textContent=fmt(state.remaining); $('phaseTimer').textContent=fmt(phaseLeft); $('phaseCount').textContent=Math.ceil(phaseLeft);
+      const progress=((r.duration-state.remaining)/r.duration)*360; $('breathRing').style.setProperty('--progress', progress+'deg');
+      const hint={morning:'Вдох ↑ · выдох ↓. Ровно, без усилия.', pm:'Сначала сброс. Потом 4:6. Возвращай внимание через выдох.', night:'Длинный выдох. Пауза. Обороты вниз.'}[r.id];
+      $('blindHint').textContent=hint;
     }
-
-    function goHome(){
-      running = false; paused = false; clearInterval(timer); audio.stopBed(.5);
-      completedPractice = null;
-      showScreen('home');
-      updateStatsUI();
+    function togglePause(){state.running=!state.running; state.lastTick=performance.now(); $('pauseBtn').textContent=state.running?'Пауза':'Продолжить';}
+    function restart(){setupPractice();}
+    function finishPractice(completed){
+      audio.stopBed(); state.running=false; state.screen='done';
+      const r=rituals[state.selected]; const worked=Math.round(Math.min(r.duration,state.totalElapsed));
+      const lines=[
+        `Ритуал: ${r.name}`,
+        `Момент: ${r.moment}`,
+        `Время: ${fmt(worked)}`,
+        `Дыхание: ${r.breath}`,
+        `Звук: ${resolvedSound(r).binauralName} + ${resolvedSound(r).noiseName}`,
+        completed ? 'Статус: завершено полностью' : 'Статус: завершено вручную',
+        '',
+        r.quote
+      ];
+      $('doneText').textContent = completed ? 'Состояние собрано. Практика завершена.' : 'Практика остановлена. Даже короткий вход засчитывается.';
+      $('reportBox').textContent=lines.join('\n'); show('done');
     }
+    function saveResult(){
+      if(state.saved) return;
+      const d=loadDay(); const r=rituals[state.selected];
+      d[r.id]=true; d.sessions+=1; d.seconds+=Math.round(Math.min(r.duration,state.totalElapsed||r.duration));
+      saveDay(d); state.saved=true; renderToday(); $('saveBtn').textContent='Сохранено ✓';
+    }
+    function resetDay(){ if(confirm('Сбросить прогресс за сегодня?')){localStorage.removeItem('markovBreathDay');renderToday();} }
+    function copyReport(){navigator.clipboard?.writeText($('reportBox').textContent); $('copyBtn').textContent='Скопировано ✓'; setTimeout(()=>$('copyBtn').textContent='Скопировать отчёт',1300);}
 
-    $('autoBtn').addEventListener('click', () => selectPractice(recommend()));
-    $('startBtn').addEventListener('click', startPractice);
-    $('testSignalsBtn').addEventListener('click', () => audio.test());
-    $('pauseBtn').addEventListener('click', pauseResume);
-    $('finishBtn').addEventListener('click', () => completePractice(true));
-    $('backHomeBtn').addEventListener('click', goHome);
-    $('homeBtn').addEventListener('click', goHome);
-    $('againBtn').addEventListener('click', () => {showScreen('home'); startPractice();});
-    $('bedVolume').addEventListener('input', () => audio.setVolumes());
-    $('cueVolume').addEventListener('input', () => audio.setVolumes());
-    $('binauralToggle').addEventListener('change', () => {if(running && !paused) audio.startBed(PRACTICES[completedPractice || selected]);});
-
-    renderRoutines();
-    selectPractice(recommend(), true);
-    updateStatsUI();
+    function bind(){
+      $('autoBtn').onclick=autoSelect; $('startHomeBtn').onclick=setupPractice; $('testBtn').onclick=()=>audio.test();
+      $('pauseBtn').onclick=togglePause; $('restartBtn').onclick=restart; $('finishBtn').onclick=()=>finishPractice(false);
+      $('saveBtn').onclick=saveResult; $('copyBtn').onclick=copyReport; $('againBtn').onclick=()=>{saveResult();show('home')}; $('homeBtn').onclick=()=>{saveResult();show('home')};
+      $('resetBtn').onclick=resetDay;
+      $('cueVolume').oninput=(e)=>{settings.cueVolume=e.target.value/100; $('cueVolumeText').textContent=e.target.value+'%'; audio.setVolumes();}
+      $('bedVolume').oninput=(e)=>{settings.bedVolume=e.target.value/100; $('bedVolumeText').textContent=e.target.value+'%'; audio.setVolumes();}
+      $('binauralMode').onchange=(e)=>{settings.binauralMode=e.target.value; renderSoundUI();}
+      $('noiseMode').onchange=(e)=>{settings.noiseMode=e.target.value; renderSoundUI();}
+      $('autoFitBtn').onclick=()=>{settings.fit='auto'; $('autoFitBtn').classList.add('active'); $('manualFitBtn').classList.remove('active'); $('beatTuneRow').style.display='none'; renderSoundUI();}
+      $('manualFitBtn').onclick=()=>{settings.fit='manual'; $('manualFitBtn').classList.add('active'); $('autoFitBtn').classList.remove('active'); $('beatTuneRow').style.display='grid'; renderSoundUI();}
+      $('beatTune').oninput=(e)=>{settings.beatTune=Number(e.target.value); $('beatTuneText').textContent=(settings.beatTune>0?'+':'')+settings.beatTune+' Hz'; renderSoundUI();}
+      $('previewSoundBtn').onclick=async()=>{await audio.init(); audio.setVolumes(); audio.startBed(rituals[state.selected]); $('previewSoundBtn').textContent='Фон включён'; setTimeout(()=>$('previewSoundBtn').textContent='Тест фона',1400);}
+      $('stopSoundBtn').onclick=()=>audio.stopBed();
+      $('vibrateSwitch').onclick=()=>{$('vibrateSwitch').classList.toggle('on'); settings.vibrate=$('vibrateSwitch').classList.contains('on');}
+    }
+    function init(){
+      const now=new Date(); $('timeLabel').textContent=now.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+      state.selected=autoId(); renderToday(); renderRituals(); bind();
+    }
+    init();
   </script>
 </body>
 </html>
